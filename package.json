@@ -1,5 +1,5 @@
 {
-  "name": "qdobp",
+  "name": "MCManage",
   "version": "1.0.0",
   "description": "Service for MC:PE servers",
   "main": "app.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qbodp/qdobp.git"
+    "url": "git+https://github.com/MCManager-Team/MCManager.git"
   },
-  "author": "",
+  "author": "110EIm",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/qbodp/qdobp/issues"
+    "url": "https://github.com/MCManager-Team/MCManager/issues"
   },
-  "homepage": "https://github.com/qbodp/qdobp#readme",
+  "homepage": "https://github.com/MCManager-Team/MCManager#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
