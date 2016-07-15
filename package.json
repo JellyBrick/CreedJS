@@ -1,0 +1,30 @@
+{
+  "name": "qdobp",
+  "version": "1.0.0",
+  "description": "Service for MC:PE servers",
+  "main": "app.js",
+  "scripts": {
+    "test": "node ./test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qbodp/qdobp.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qbodp/qdobp/issues"
+  },
+  "homepage": "https://github.com/qbodp/qdobp#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "mongoose": "^4.5.4",
+    "morgan": "^1.7.0",
+    "node-rsa": "^0.4.0",
+    "pug": "^2.0.0-beta3",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.4.8"
+  }
+}
