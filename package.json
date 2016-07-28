@@ -1,21 +1,21 @@
 {
-  "name": "MCManage",
+  "name": "MineJet",
   "version": "1.0.0",
   "description": "Service for MC:PE servers",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "node ./test.js"
+    "test": "node test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MCManager-Team/MCManager.git"
+    "url": "git+https://github.com/MineJet/MineJet.git"
   },
   "author": "110EIm",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MCManager-Team/MCManager/issues"
+    "url": "https://github.com/MineJet/MineJet/issues"
   },
-  "homepage": "https://github.com/MCManager-Team/MCManager#readme",
+  "homepage": "https://github.com/MineJet/MineJet#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",

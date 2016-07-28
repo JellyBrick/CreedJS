@@ -1,11 +1,11 @@
-# MCManager
+# MineJet
 
 서버/유저 관리 웹 애플리케이션.
 
 ```
 The MIT License (MIT)
 
-Copyright (c) 2016 MCManager
+Copyright (c) 2016 MineJet
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
