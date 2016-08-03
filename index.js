@@ -1,3 +1,5 @@
+'use strict'
+
 var express = require('express');
 var cluster = require('cluster');
 var os = require('os');,
