@@ -5,7 +5,7 @@ var userSchema = new Schema({
 		email: String,
 		password: String,
 		registerDate: Date,
-		isCertified: Boolean,
+		isAuthenticated: Boolean,
 		servers: [{
 			id: Number,
 			firstJoin: Date,
