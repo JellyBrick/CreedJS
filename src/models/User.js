@@ -6,12 +6,7 @@ var userSchema = new Schema({
 		password: String,
 		registerDate: Date,
 		isAuthenticated: Boolean,
-		servers: [{
-			id: Number,
-			firstJoin: Date,
-			lastJoin: Date,
-			password: String
-			}],
+		admin: Boolean,
 		nickname: String
 	});
 
