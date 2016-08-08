@@ -1,3 +1,9 @@
-module.experts = app => {
-	app.get('/', (req, res) => res.render('home', {title: 'MineJet:Powerful MC:PE Server Manager'}));
-}
+/* jshint esversion: 6 */
+var express = require('express');
+var router = express.Router();
+
+router.get('/', (req, res) => {
+  res.render('home', {title: 'MineJet'});
+});
+
+module.exports = router;

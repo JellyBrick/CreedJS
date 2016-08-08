@@ -1,6 +1,6 @@
-module.experts = {
+module.exports = {
 	secret: 'secret',
-	database: 'mongodb://user:auth;localhost/minejet',
+	database: 'mongodb://user:auth@localhost/minejet',
 	botToken: 'abcdefghijklmnopqrstuvwxyz',
 	port: 3039
-}
+};
