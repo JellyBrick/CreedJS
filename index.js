@@ -14,11 +14,6 @@ global.config = require('./config');
 global.mongo = mongoose.createConnection(global.config.database);
 
 if(cluster.isMaster) {
-	/*
-		아 초보주제에 괜히 클러스터링으로 시작한듯;;
-		클러스터링은 그냥 포기합니다 ㅠㅜ
-		async나 제대로 공부해야지
-	*/
 	os.cpus().forEach(() => cluster.fork());
 
 	cluster.on('exit', (worker, code, signal) => {
@@ -35,6 +30,7 @@ if(cluster.isMaster) {
 
 	let index = require('./routes');
 	let api = require('./routes/api');
+	let test = require('./routes/test');
 
 	app.set('views', path.join(__dirname, 'views'));
 	app.set('view engine', 'pug');
@@ -47,6 +43,8 @@ if(cluster.isMaster) {
 
 	app.use('/', index);
 	app.use('/api', api);
+	app.use('/test', test);
 
-	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #${id}'));
+	require('./src/telegram')();
+	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #' + id));
 }

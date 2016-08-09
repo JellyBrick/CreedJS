@@ -38,3 +38,5 @@ jspm_packages
 
 # Cloud9 config directory
 .c9
+
+config.js
