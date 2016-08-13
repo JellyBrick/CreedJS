@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var statusSchema = new Schema({
-  id: Number,
-  ip: Number,
+  date: Date,
+  ip: String,
   users: Number
 });
 

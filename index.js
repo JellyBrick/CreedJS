@@ -1,5 +1,4 @@
 /* jshint esversion: 6 */
-'use strict';
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -11,20 +10,16 @@ var os = require('os');
 var path = require('path');
 
 global.config = require('./config');
-global.mongo = mongoose.createConnection(global.config.database);
 
 if(cluster.isMaster) {
 	os.cpus().forEach(() => cluster.fork());
 
 	cluster.on('exit', (worker, code, signal) => {
-		console.log('worker #${worker.id} died: ${signal || code}');
+		console.log('worker #' + worker.id + ' died: ' + signal || code);
 		cluster.fork();
 	});
-
-	global.mongo.on('error', console.error.bind(console, 'connection error:'));
-
-	global.mongo.on('open', () => console.log('mongodb connected'));
 } else{
+	let mongo = mongoose.createConnection(global.config.database);
 	let id = cluster.worker.id;
 	let app = express();
 
@@ -45,6 +40,9 @@ if(cluster.isMaster) {
 	app.use('/api', api);
 	app.use('/test', test);
 
-	require('./src/telegram')();
+	mongo.on('error', console.error.bind(console, 'connection error:'));
+	mongo.once('open', () => console.log('mongodb connected'));
+
+	require('./src/telegram')(mongo);
 	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #' + id));
 }

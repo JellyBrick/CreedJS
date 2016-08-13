@@ -6,25 +6,50 @@ var ServerStatus = require('../src/models/ServerStatus');
 var router = require('express').Router();
 
 router.get('/', (req, res) => {
- var mohi = new User({
-  telegram: {
- 		userId: 00000000
+  var mohi = new User({
+   telegram: {
+ 		userId: 000000000
  	},
  	password: 'password',
- 	registerDate: new Data(),
+ 	registerDate: new Date(),
  	isAuthenticated: true,
  	nickname: '110eim'
   });
-
-  //Server
-  //ServerStatus
+  
+  var testStatus = new ServerStatus({
+    date: new Date(),
+    ip: '127.0.0.1',
+    users: 30
+  });
+  
+  var testServer = new Server({
+    admin: User.findOne({userId: 00000000})._id,
+    name: 'Test Server',
+    domain: 'domain.com',
+    visitors: 405
+  });
 
   mohi.save(err => {
     if(err) throw err;
 
     console.log('User saved successfully');
-    res.json({result: 'success'});
+    res.json({success: true});
+  });
+  
+  testStatus.save(err => {
+   if(err) throw err;
+   
+   console.log('ServerStatus saved successfully');
+   res.join({success: true});
+  });
+  
+  testServer.save(err => {
+    if(err) throw err;
+    
+    console.log('Server saved successfully');
+    res.join({success: true});
   });
 });
+
 
 module.exports = router;
