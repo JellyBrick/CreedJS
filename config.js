@@ -1,6 +1,6 @@
 module.exports = {
 	secret: 'secret',
 	database: 'mongodb://localhost/minejet',
-	botToken: '',
+	botToken: 'abcdefghijklmnopqrstuvwxyz',
 	port: 8080
 };

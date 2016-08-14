@@ -13,18 +13,24 @@ module.exports = () => {
             switch(command) {
                 case '/register':
                     Utils.ask(bot, msg.from.id, ['Your mc:pe nickname :', 'Your password : ', 'Retype your password : ', 'Are you sure? (Y/N)'], result => {
-                        if(result[1] != result[2]) {
-                            bot.sendMessage(msg.from.id, 'Your password is not match with retyped password');
-                            return;
+                        switch(result.length) {
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                if(result[1] != result[2]) {
+                                    bot.sendMessage(msg.from.id, 'Your password is not match with retyped password');
+                                }
+                                break;
+                            case 4:
+                                if(result[3] != 'Y' || result[3] != 'y' || result[3] != 'yes') {
+                                    bot.sendMessage(msg.from.id, 'You stopped registering. Try again');
+                                }
+                                break;
+                            //TODO: 텔레그램 유저 id 중복 체크
+                            //TODO: 닉네임/패스워드 정규식으로 검사
                         }
-                        
-                        if(result[3] != 'Y' || result[3] != 'y' || result[3] != 'yes') {
-                            bot.sendMessage(msg.from.id, 'You stopped registering. Try again');
-                            return;
-                        }
-                        
-                        //TODO: 텔레그램 유저 id 중복 체크
-                        //TODO: 닉네임/패스워드 정규식으로 검사
                     });
                     break;
                 case '/addserver':

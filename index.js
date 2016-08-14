@@ -1,4 +1,5 @@
 /* jshint esversion: 6 */
+/* global config */
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -21,7 +22,7 @@ if(cluster.isMaster) {
 		cluster.fork();
 	});
 } else{
-	//let mongo = mongoose.createConnection(global.config.database);
+	//let mongo = mongoose.createConnection(config.database);
 	let id = cluster.worker.id;
 	let app = express();
 
@@ -45,5 +46,5 @@ if(cluster.isMaster) {
 	//mongo.on('error', console.error.bind(console, 'connection error:'));
 	//mongo.once('open', () => console.log('mongodb connected'));
 	
-	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #' + id));
+	app.listen(process.env.PORT || config.port, () => console.log('Listening on worker #' + id));
 }
