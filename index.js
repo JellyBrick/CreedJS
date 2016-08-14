@@ -43,6 +43,6 @@ if(cluster.isMaster) {
 	mongo.on('error', console.error.bind(console, 'connection error:'));
 	mongo.once('open', () => console.log('mongodb connected'));
 
-	require('./src/telegram')(mongo);
+	require('./src/telegram')();
 	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #' + id));
 }
