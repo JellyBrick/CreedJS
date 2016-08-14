@@ -13,13 +13,15 @@ global.config = require('./config');
 
 if(cluster.isMaster) {
 	os.cpus().forEach(() => cluster.fork());
+	
+	require('./src/telegram')();
 
 	cluster.on('exit', (worker, code, signal) => {
 		console.log('worker #' + worker.id + ' died: ' + signal || code);
 		cluster.fork();
 	});
 } else{
-	let mongo = mongoose.createConnection(global.config.database);
+	//let mongo = mongoose.createConnection(global.config.database);
 	let id = cluster.worker.id;
 	let app = express();
 
@@ -40,9 +42,8 @@ if(cluster.isMaster) {
 	app.use('/api', api);
 	app.use('/test', test);
 
-	mongo.on('error', console.error.bind(console, 'connection error:'));
-	mongo.once('open', () => console.log('mongodb connected'));
-
-	require('./src/telegram')();
+	//mongo.on('error', console.error.bind(console, 'connection error:'));
+	//mongo.once('open', () => console.log('mongodb connected'));
+	
 	app.listen(process.env.PORT || global.config.port, () => console.log('Listening on worker #' + id));
 }

@@ -16,5 +16,6 @@ module.exports = {
                 return arguments.callee(bot, target, messages, callback, result);
             });
         }
-    }
+        //TODO: 결과 한 개가 나올 때 마다 호출하는 콜백 비스무리한게 필요할 듯
+        }
 };
