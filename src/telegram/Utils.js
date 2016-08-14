@@ -5,7 +5,7 @@ module.exports = class Utils {
             bot.sendMessage(target, messages[0]);
             bot.once('text', (msg) => {
                 result.push(msg);
-                return arguments.callee(bot, target, messages, callback, result);
+                return Utils.ask(bot, target, messages, callback, result);
             });
         } else {
             let result = arguments[4];
@@ -14,7 +14,7 @@ module.exports = class Utils {
             bot.once('text', (msg) => {
                 result.push(msg);
                 callback(result); // result.length 로 걸러내야함
-                return arguments.callee(bot, target, messages, callback, result);
+                return Utils.ask(bot, target, messages, callback, result);
             });
         }
     }
