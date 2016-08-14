@@ -9,9 +9,17 @@ module.exports = class Utils {
             });
         } else {
             let result = arguments[4];
-            if(result.length === messages.length)  { return; }
+            if(messages.length -1 == result.length) {
+                bot.sendMessage(target, messages[messages.length -1]);
+                bot.once('text', msg => {
+                    result.push(msg);
+                    callback(result);
+                });
+                return;
+            }
             bot.sendMessage(target, messages[result.length]);
-            bot.once('text', (msg) => {
+            if(result.length === messages.length)  { return; }
+            bot.once('text', msg => {
                 result.push(msg);
                 callback(result); // result.length 로 걸러내야함
                 return Utils.ask(bot, target, messages, callback, result);
