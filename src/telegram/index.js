@@ -1,6 +1,6 @@
 /* jshint esversion: 6 */
 var bot = new (require('node-telegram-bot-api'))(global.config.botToken, {polling: true});
-var utils = require('./utils');
+var Utils = require('./Utils');
 var User = require('../models/User');
 var Server = require('../models/Server');
 
@@ -12,13 +12,13 @@ module.exports = () => {
             var command = split[0];
             switch(command) {
                 case '/register':
-                    utils.ask(bot, msg.from.id, ['Your mc:pe nickname :', 'Your password : ', 'Retype your password : ', 'Are you sure? (Y/N)'], result => {
+                    Utils.ask(bot, msg.from.id, ['Your mc:pe nickname :', 'Your password : ', 'Retype your password : ', 'Are you sure? (Y/N)'], result => {
                         if(result[1] != result[2]) {
                             bot.sendMessage(msg.from.id, 'Your password is not match with retyped password');
                             return;
                         }
                         
-                        if(result[3] != Y || result[3] != y || result[3] != yes) {
+                        if(result[3] != 'Y' || result[3] != 'y' || result[3] != 'yes') {
                             bot.sendMessage(msg.from.id, 'You stopped registering. Try again');
                             return;
                         }
@@ -28,7 +28,7 @@ module.exports = () => {
                     });
                     break;
                 case '/addserver':
-                    utils.ask(bot, msg.from.id, ['Name of server : '], result => {
+                    Utils.ask(bot, msg.from.id, ['Name of server : '], result => {
                         
                     });
                     break;

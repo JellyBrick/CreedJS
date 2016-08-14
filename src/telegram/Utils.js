@@ -1,5 +1,5 @@
-module.exports = {
-    ask: function(bot, target, messages, callback) {
+module.exports = class Utils {
+    static ask(bot, target, messages, callback) {
         if(arguments.length < 5) {
             let result = [];
             bot.sendMessage(target, messages[0]);
@@ -16,6 +16,6 @@ module.exports = {
                 return arguments.callee(bot, target, messages, callback, result);
             });
         }
-        //TODO: 결과 한 개가 나올 때 마다 호출하는 콜백 비스무리한게 필요할 듯
-        }
+        //TODO: 채팅 메세지를 받을 때마다 호출되는 콜백 비스무리한게 필요할 듯
+    }
 };
