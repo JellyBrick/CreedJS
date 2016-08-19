@@ -8,7 +8,10 @@ var User = require('../models/User');
  */
 //TODO: Registeration 클래스로 기능 분리
 module.exports = class {
-    constructor(user, id, utils) {
+    /**
+     * @param {Model} user, {number} id
+     */
+    constructor(user, id) {
         this.user = user;
         this.id = id;
     }
@@ -20,7 +23,7 @@ module.exports = class {
      */
     askNickName(callback) {
         utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
-        callback(msg.text);
+            callback(msg.text);
         });
     }
     

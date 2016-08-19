@@ -12,6 +12,7 @@ var path = require('path');
 
 global.config = require('./config');
 global.bot = new (require('node-telegram-bot-api'))(config.botToken, {polling: true});
+global.utils = new (require('./src/Utils'))();
 
 if(cluster.isMaster) {
 	os.cpus().forEach(() => cluster.fork());

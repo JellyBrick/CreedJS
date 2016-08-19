@@ -1,10 +1,11 @@
 /* jshint esversion: 6 */
 /* global bot */
+/* global utils */
 var Utils = require('./Utils');
 var User = require('../models/User');
 var Server = require('../models/Server');
 var async = require('async');
-var utils = new (require('./Utils'))();
+var RegisterRequest = require('./RegisterRequest');
 
 module.exports = () => {
     bot.on('text', msg => {
@@ -20,16 +21,16 @@ module.exports = () => {
                  */
                 case '/register':
                     let user = new User();
-                    /*
+                    let req = new RegisterRequest(user, id);
+                    
                     async.waterfall([
-                        askNickName,
-                        checkOverlappedNickName,
-                        askPassword,
-                        checkPasswordAgain,
-                        askEmailAddress,
-                        askRegisterIntent
-                    ], checkIntent);
-                    */
+                        req.askNickName,
+                        req.checkOverlappedNickName,
+                        req.askPassword,
+                        req.askEmailAddress,
+                        req.askRegisterIntent
+                    ], req.checkIntent);
+                    
                     break;
                 case '/addserver':
                     break;
