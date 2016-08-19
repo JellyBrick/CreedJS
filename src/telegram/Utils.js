@@ -1,29 +1,22 @@
-module.exports = class Utils {
-    static ask(bot, target, messages, callback) {
-        if(arguments.length < 5) {
-            let result = [];
-            bot.sendMessage(target, messages[0]);
-            bot.once('text', (msg) => {
-                result.push(msg);
-                return Utils.ask(bot, target, messages, callback, result);
-            });
-        } else {
-            let result = arguments[4];
-            if(messages.length -1 == result.length) {
-                bot.sendMessage(target, messages[messages.length -1]);
-                bot.once('text', msg => {
-                    result.push(msg);
-                    callback(result);
-                });
-                return;
-            }
-            bot.sendMessage(target, messages[result.length]);
-            if(result.length === messages.length)  { return; }
-            bot.once('text', msg => {
-                result.push(msg);
-                callback(result); // result.length 로 걸러내야함
-                return Utils.ask(bot, target, messages, callback, result);
-            });
+module.exports = class {
+    constructor(bot) {
+        this.askIds = [];
+        this.bot = bot;
+    }
+    /**
+     * @description
+     * target에게 메세지를 보내고 응답 결과를 콜백으로 전달합니다.
+     * @param {number} target, {string} message, {function} callback
+     * 
+     */
+    ask(target, message, callback) {
+        if(this.askIds[target]) {
+            return;
         }
+        this.askIds.push(target);
+        this.bot.on('text', msg => {
+            callback(msg);
+            this.askIds.splice(this.askIds.indexOf(target));
+        });
     }
 };

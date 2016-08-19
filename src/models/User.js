@@ -4,11 +4,11 @@ var Schema = mongoose.Schema;
 var userSchema = new Schema({
 	telegram: {
 		userId: Number
-		// chatId: Number //userId and chatId is same.
+		// chatId: Number //userId and chatId is same when chat in rivate chatting.
 	},
+	email: String, //Not using this property yet
 	password: String,
 	registerDate: Date,
-	isAuthenticated: Boolean,
 	nickname: String
 });
 
