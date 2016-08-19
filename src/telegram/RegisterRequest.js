@@ -1,17 +1,16 @@
 /* global bot */
+/* global utils */
 var User = require('../models/User');
 
 /**
  * @description
  * 회원가입 명령어를 처리합니다.
  */
- 
 //TODO: Registeration 클래스로 기능 분리
 module.exports = class {
     constructor(user, id, utils) {
         this.user = user;
         this.id = id;
-        this.utils = utils;
     }
     
     /**
@@ -20,7 +19,7 @@ module.exports = class {
      * @param {function} callback
      */
     askNickName(callback) {
-        this.utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
+        utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
         callback(msg.text);
         });
     }
@@ -44,7 +43,7 @@ module.exports = class {
      * @param {function} callback
      */
     askPassword(callback) {
-        this.utils.ask(this.id, 'Send password you want to set : ', msg => {
+        utils.ask(this.id, 'Send password you want to set : ', msg => {
             callback(null, msg.text);
         });
     }
@@ -55,7 +54,7 @@ module.exports = class {
      * @param {function} callback
      */
     askEmailAddress(callback) {
-        this.utils.ask(this.id, 'Send your e-mail address', msg => {
+        utils.ask(this.id, 'Send your e-mail address', msg => {
             let email = msg;
             //validate
             this.user.set('email', email);
@@ -68,7 +67,7 @@ module.exports = class {
      * @param {function} callback
      */
     askRegisterIntent = callback => {
-        this.utils.ask(this.id, 'Do you want to register with this info? (Y/N)', msg => {
+        utils.ask(this.id, 'Do you want to register with this info? (Y/N)', msg => {
             callback(null, msg.toLowerCase());
         });
     }
@@ -76,14 +75,25 @@ module.exports = class {
     /**
      * @description
      * 옳은 선택을 했는지 체크합니다.
-     * 수정바람(기능 분리)
+     * @param {string} res
      */
-    checkIntent(err, result) {
+    isYes(res) {
+        if(res == 'y' || res == 'yes') {
+            return true;
+        }
+    }
+    
+    /**
+     * @description
+     * askRegisterIntent의 응답 결과를 처리하니다.
+     * @param {Error|null}  err, {string} res
+     */
+    checkIntent(err, res) {
         if(err) {
             throw err;
         }
-        if(result == 'y' || result == 'yes') {
-            this.user.save();
+        if(this.isYes(res)) {
+            //TODO: save user model.
         } else {
             bot.sendMessage(this.id, 'Register failed');
         }
