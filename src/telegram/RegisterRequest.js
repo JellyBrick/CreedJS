@@ -9,7 +9,8 @@ var User = require('../models/User');
 //TODO: Registeration 클래스로 기능 분리
 module.exports = class {
     /**
-     * @param {Model} user, {number} id
+     * @param {Model} user
+     * @param {number} id
      */
     constructor(user, id) {
         this.user = user;
@@ -30,7 +31,8 @@ module.exports = class {
     /**
      * @description
      * 겹치는 닉네임인지 검사합니다.
-     * @param {string} name, {function} callback
+     * @param {string} name
+     * @param {function} callback
      */
     checkOverlappedNickName(name, callback) {
         if(! User.findOne({nickname: name}).exists()) {
@@ -89,7 +91,8 @@ module.exports = class {
     /**
      * @description
      * askRegisterIntent의 응답 결과를 처리하니다.
-     * @param {Error|null}  err, {string} res
+     * @param {Error|null}  err
+     * @param {string} res
      */
     checkIntent(err, res) {
         if(err) {

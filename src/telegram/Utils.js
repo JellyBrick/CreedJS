@@ -7,9 +7,10 @@ module.exports = class {
     
     /**
      * @description
-     * target에게 메세지를 보내고 응답 결과를 콜백으로 전달합니다.
-     * @param {number} target, {string} message, {function} callback
-     * 
+     * target에게 메세지를 보내고 결과를 콜백으로 전달합니다.
+     * @param {number} target
+     * @param {string} message
+     * @param {function} callback
      */
     ask(target, message, callback) {
         if(this.askIds[target]) {
