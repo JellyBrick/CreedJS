@@ -79,17 +79,6 @@ module.exports = class {
     
     /**
      * @description
-     * 옳은 선택을 했는지 체크합니다.
-     * @param {string} res
-     */
-    isYes(res) {
-        if(res == 'y' || res == 'yes') {
-            return true;
-        }
-    }
-    
-    /**
-     * @description
      * askRegisterIntent의 응답 결과를 처리하니다.
      * @param {?Error}  err
      * @param {string} res
@@ -98,7 +87,7 @@ module.exports = class {
         if(err) {
             throw err;
         }
-        if(this.isYes(res)) {
+        if(utils.isYes(res)) {
             //TODO: save user model.
         } else {
             bot.sendMessage(this.id, 'Register failed');

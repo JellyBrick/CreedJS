@@ -22,4 +22,15 @@ module.exports = class {
             this.askIds.splice(this.askIds.indexOf(target));
         });
     }
+    
+    /**
+     * @description
+     * 옳은 선택을 했는지 체크합니다.
+     * @param {string} res
+     */
+    isYes(res) {
+        if(res == 'y' || res == 'yes') {
+            return true;
+        }
+    }
 };
