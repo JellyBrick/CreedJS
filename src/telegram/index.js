@@ -1,15 +1,12 @@
 /* jshint esversion: 6 */
 /* global bot */
 /* global utils */
-var Utils = require('./Utils');
 var User = require('../models/User');
-var Server = require('../models/Server');
 var async = require('async');
 var RegisterRequest = require('./RegisterRequest');
 
 module.exports = () => {
     bot.on('text', msg => {
-        /* handling text messages */
         if(msg.entities && msg.entities[0].type == 'bot_command') {
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
@@ -32,7 +29,17 @@ module.exports = () => {
                     ], req.checkIntent);
                     
                     break;
-                case '/addserver':
+                /**
+                 * @description
+                 * 비밀번호를 변경합니다
+                 */
+                case '/changepassword':
+                    break;
+                /**
+                 * @description
+                 * 서버를 등록합니다.
+                 */
+                case '/newserver':
                     break;
             }
         }
