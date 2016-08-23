@@ -91,7 +91,7 @@ module.exports = class {
     /**
      * @description
      * askRegisterIntent의 응답 결과를 처리하니다.
-     * @param {Error|null}  err
+     * @param {?Error}  err
      * @param {string} res
      */
     checkIntent(err, res) {
