@@ -80,14 +80,14 @@ module.exports = class {
     /**
      * @description
      * askRegisterIntent의 응답 결과를 처리하니다.
-     * @param {?Error}  err
+     * @param {Error|null}  err
      * @param {string} res
      */
     checkIntent(err, res) {
         if(err) {
             throw err;
         }
-        if(utils.isYes(res)) {
+        if(this.isYes(res)) {
             //TODO: save user model.
         } else {
             bot.sendMessage(this.id, 'Register failed');

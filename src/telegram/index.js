@@ -25,8 +25,8 @@ module.exports = () => {
                         req.checkOverlappedNickName,
                         req.askPassword,
                         req.askEmailAddress,
-                        req.askRegisterIntent
-                    ], req.checkIntent);
+                        req.askRegisterIntention
+                    ], req.checkIntention);
                     
                     break;
                 /**
@@ -37,7 +37,7 @@ module.exports = () => {
                     break;
                 /**
                  * @description
-                 * 서버를 등록합니다.
+                 * 새 서버를 등록합니다.
                  */
                 case '/newserver':
                     break;
