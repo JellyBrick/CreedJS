@@ -7,4 +7,4 @@ var statusSchema = new Schema({
     users: Number
 });
 
-module.exports = mongoose.model('server-status', statusSchema);
+module.exports = mongoose.model('ServerStatus', statusSchema);
