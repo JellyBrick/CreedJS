@@ -1,3 +1,3 @@
-var TelegramBot = require('node-telegram-bot-api');
+let mongoose = require('mongoose');
 
-var bot = new TelegramBot('', {polling: true});
+mongoose.connect('mongodb://110e.im/minejet');

@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var passportLocalMongoose = require('passport-local-mongoose');
 
-var userSchema = new Schema({
+var account = new Schema({
 	telegram: {
 		userId: Number
 	},
@@ -12,6 +12,6 @@ var userSchema = new Schema({
 	isBanned: Boolean
 });
 
-userSchema.plugin(passportLocalMongoose);
+account.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Account', account);
