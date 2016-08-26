@@ -26,7 +26,7 @@ module.exports = () => {
                         req.askPassword,
                         req.askEmailAddress,
                         req.askRegisterIntention
-                    ], req.checkIntention);
+                    ], req.checkFinalIntention);
                     
                     break;
                 /**

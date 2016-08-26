@@ -7,7 +7,10 @@ var User = require('../models/User');
  * 회원가입 명령어를 처리합니다.
  */
 //TODO: Registeration 클래스로 기능 분리
-module.exports = class {
+module.exports = class RegisterRequest {
+    static ALREADY_REGISTERED = 0;
+    static EXISTING_NICKNAME = 1;
+    
     /**
      * @param {Model} user
      * @param {number} id
@@ -15,6 +18,7 @@ module.exports = class {
     constructor(user, id) {
         this.user = user;
         this.id = id;
+        
     }
     
     /**
@@ -23,8 +27,11 @@ module.exports = class {
      * @param {function} callback
      */
     askNickName(callback) {
+        if(User.findOne({id: this.id}).exists()) {
+            callback(new Error(RegisterRequest.ALREADY_REGISTERED));
+        }
         utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
-            callback(msg.text);
+            callback(null, msg.text);
         });
     }
     
@@ -36,7 +43,7 @@ module.exports = class {
      */
     checkOverlappedNickName(name, callback) {
         if(! User.findOne({nickname: name}).exists()) {
-            return callback(new Error('Existing nickname'));
+            return callback(new Error(RegisterRequest.EXISTING_NICKNAME));
         }
         this.user.set('nickname', name);
         callback();
@@ -71,7 +78,7 @@ module.exports = class {
      * 회원가입을 할 지 물어봅니다.
      * @param {function} callback
      */
-    askRegisterIntent = callback => {
+    askRegisterIntention(callback) {
         utils.ask(this.id, 'Do you want to register with this info? (Y/N)', msg => {
             callback(null, msg.toLowerCase());
         });
@@ -79,16 +86,16 @@ module.exports = class {
     
     /**
      * @description
-     * askRegisterIntent의 응답 결과를 처리하니다.
+     * askRegisterIntention의 응답 결과를 처리하니다.
      * @param {Error|null}  err
      * @param {string} res
      */
-    checkIntent(err, res) {
+    checkFinalIntention(err, res) {
         if(err) {
             throw err;
         }
         if(this.isYes(res)) {
-            //TODO: save user model.
+            this.user.save();
         } else {
             bot.sendMessage(this.id, 'Register failed');
         }
