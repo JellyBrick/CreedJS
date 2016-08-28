@@ -5,24 +5,26 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
-
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var redis = require('redis');
 
 var path = require('path');
 
 global.config = require('./config');
-global.bot = new(require('node-telegram-bot-api'))(config.botToken, {
+global.bot = new (require('node-telegram-bot-api'))(config.botToken, {
     polling: true
 });
-global.utils = new(require('./src/Utils'))();
-
-var mongo = mongoose.createConnection(config.database, {
+global.utils = new (require('./src/Utils'))();
+global.mongo = mongoose.createConnection(config.database, {
     config: {
         user: config.dbuser,
         pass: config.dbpass
     }
 });
+global.redisClient = redis.createClient();
+global.server = new (require('./src/Server'))();
+
 var id = cluster.worker.id;
 var app = express();
 

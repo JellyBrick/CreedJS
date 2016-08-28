@@ -1,11 +1,19 @@
 moudle.exports = class Server {
     constructor() {
-        this.servers = {};
         this.init();
     }
 
     init() {
-
+        /**
+         * @description Every servers using minejet is stored in this.
+         * @type {MCPEServer}
+         */
+        this.servers = {};
+        /**
+         * @description if someone's account information is changed, his nickname is stored in this.
+         * @type {Object}
+         */
+        this.changedUsers = {}
     }
 
     /**
