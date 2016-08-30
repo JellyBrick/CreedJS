@@ -11,19 +11,22 @@ var redis = require('redis');
 
 var path = require('path');
 
-global.config = require('./config');
-global.bot = new (require('node-telegram-bot-api'))(config.botToken, {
+global.minejet = {};
+minejet.config = require('./config');
+minejet.bot = new (require('node-telegram-bot-api'))(config.botToken, {
     polling: true
 });
-global.utils = new (require('./src/Utils'))();
-global.mongo = mongoose.createConnection(config.database, {
+minejet.utils = new (require('./src/Utils'))();
+minejet.mongo = mongoose.createConnection(config.database, {
     config: {
         user: config.dbuser,
         pass: config.dbpass
     }
 });
-global.redisClient = redis.createClient();
-global.server = new (require('./src/Server'))();
+minejet.redisClient = redis.createClient();
+minejet.server = new (require('./src/Server'))();
+
+minejet.database = {};
 
 var id = cluster.worker.id;
 var app = express();
