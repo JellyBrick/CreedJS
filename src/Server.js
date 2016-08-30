@@ -1,9 +1,15 @@
+var serverInstance = null;
+
 moudle.exports = class Server {
     constructor() {
-        this.init();
+        if(!serverInstance) {
+            serverInstance = this;
+            this.
+        }
+        this._init();
     }
 
-    init() {
+    _init() {
         /**
          * @description Every servers using minejet is stored in this.
          * @type {MCPEServer}
