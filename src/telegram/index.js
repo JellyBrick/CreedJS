@@ -1,12 +1,12 @@
 /* jshint esversion: 6 */
-/* global bot */
+/* global minejet */
 /* global utils */
-var User = require('../models/User');
+var User = require('../models/Account');
 var async = require('async');
 var RegisterRequest = require('./RegisterRequest');
 
 module.exports = () => {
-    bot.on('text', msg => {
+    minejet.bot.on('text', msg => {
         if(msg.entities && msg.entities[0].type == 'bot_command') {
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
@@ -19,7 +19,7 @@ module.exports = () => {
                 case '/register':
                     let user = new User();
                     let req = new RegisterRequest(user, id);
-                    
+
                     async.waterfall([
                         req.askNickName,
                         req.checkOverlappedNickName,
@@ -27,7 +27,7 @@ module.exports = () => {
                         req.askEmailAddress,
                         req.askRegisterIntention
                     ], req.checkFinalIntention);
-                    
+
                     break;
                 /**
                  * @description

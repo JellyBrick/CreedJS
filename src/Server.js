@@ -1,37 +1,77 @@
 var serverInstance = null;
 
-moudle.exports = class Server {
-    constructor() {
+module.exports = class Server {
+    constructor(app) {
         if(!serverInstance) {
             serverInstance = this;
-            this.
         }
+        this.app = app
         this._init();
     }
 
     _init() {
         /**
-         * @description Every servers using minejet is stored in this.
-         * @type {MCPEServer}
+         * @description
+         * 모든 클라이언트(마크 서버) 객체가 여기에 담깁니다.
+         * Every clients(MCPE Server) using minejet is stored in this.
+         * @type {Client}
          */
         this.servers = {};
-        /**
-         * @description if someone's account information is changed, his nickname is stored in this.
-         * @type {Object}
-         */
-        this.changedUsers = {}
+        for (let i = 0; i < this.getOs().cpus().length; i++) {
+            let id = this.getCluster().fork().id;
+            this.app.listen(process.env.PORT || config.port, () => console.log('Listening on worker #' + id));
+        }
     }
 
-    get servers() {
+    getServers() {
         return this.server;
     }
 
-    get changedUsers() {
-        return this.changedUsers;
+    /**
+     * @description
+     * It returns the Cluster module.
+     * 클러스터 모듈을 반환합니다.
+     * @return {object}
+     */
+    getCluster() {
+        return require('cluster');
     }
 
     /**
-	 * @description 플레이어가 서버에 접속할 때 호출됩니다.
+     * @description
+     * It returns the OS module.
+     * OS 모듈을 반환합니다.
+     * @return {object}
+     */
+    getOs() {
+        return require('os');
+    }
+
+    /**
+     * @description
+     * It returns the worker to using index. (1 ~ CPU Cores)
+     * 1~CPU코어수 중의 숫자를 입력받아 해당되는 순서의 워커를 반환합니다.
+     * @param {integer} index
+     * @return {object}
+     */
+    getWorker(index) {
+        let count = 0;
+        let workers = {};
+        for (let key in this.getCluster().workers)
+            workers[count++] = this.getCluster().workers[key];
+
+        let target = workers[index];
+        if (target == null) {
+            for (let key in this.getCluster().workers) {
+                target = this.getCluster().workers[key];
+                break;
+            }
+        }
+        return target;
+    }
+    /**
+     * @description
+     * 플레이어가 클라이언트에 접속할 때 호출됩니다.
      * @param {Server} server
      * @param {Player} player
      */
@@ -40,7 +80,7 @@ moudle.exports = class Server {
     }
 
     /**
-	 * @description 플레이어가 서버에서 나갈 때 호출됩니다.
+     * @description 플레이어가 클라이언트에서 나갈 때 호출됩니다.
      * @param {Server} server
      * @param {Player} player
      */
@@ -49,18 +89,18 @@ moudle.exports = class Server {
     }
 
     /**
-	 * @description 서버가 켜질 때 호출됩니다.
+     * @description 클라이언트가 켜질 때 호출됩니다.
      * @param {Server} server
      */
-    onServerOpen(server) {
+    onClientOpen(server) {
         this.servers.push(server);
     }
 
     /**
-     * @description 서버가 꺼질 때 호출됩니다.
+     * @description 클라이언트가 꺼질 때 호출됩니다.
      * @param {Server} server
      */
-    onServerClose(server) {
+    onClientClose(server) {
         this.server.splice(this.server.indexOf(server), 1);
     }
 };

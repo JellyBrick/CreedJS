@@ -1,6 +1,6 @@
 /* global bot */
-/* global utils */
-var User = require('../models/User');
+var User = require('../models/Account');
+var error = require('./error');
 
 /**
  * @description
@@ -8,9 +8,6 @@ var User = require('../models/User');
  */
 //TODO: Registeration 클래스로 기능 분리
 module.exports = class RegisterRequest {
-    static ALREADY_REGISTERED = 0;
-    static EXISTING_NICKNAME = 1;
-    
     /**
      * @param {Model} user
      * @param {number} id
@@ -18,9 +15,9 @@ module.exports = class RegisterRequest {
     constructor(user, id) {
         this.user = user;
         this.id = id;
-        
+
     }
-    
+
     /**
      * @description
      * 닉네임을 물어봅니다.
@@ -28,13 +25,13 @@ module.exports = class RegisterRequest {
      */
     askNickName(callback) {
         if(User.findOne({id: this.id}).exists()) {
-            callback(new Error(RegisterRequest.ALREADY_REGISTERED));
+            callback(new Error(error.ALREADY_REGISTERED));
         }
         utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
             callback(null, msg.text);
         });
     }
-    
+
     /**
      * @description
      * 겹치는 닉네임인지 검사합니다.
@@ -43,12 +40,12 @@ module.exports = class RegisterRequest {
      */
     checkOverlappedNickName(name, callback) {
         if(! User.findOne({nickname: name}).exists()) {
-            return callback(new Error(RegisterRequest.EXISTING_NICKNAME));
+            return callback(new Error(error.EXISTING_NICKNAME));
         }
         this.user.set('nickname', name);
         callback();
     }
-    
+
     /**
      * @description
      * 비밀번호를 물어봅니다.
@@ -59,7 +56,7 @@ module.exports = class RegisterRequest {
             callback(null, msg.text);
         });
     }
-    
+
     /**
      * @description
      * 이메일을 물어봅니다.
@@ -72,7 +69,7 @@ module.exports = class RegisterRequest {
             this.user.set('email', email);
         });
     }
-    
+
     /**
      * @description
      * 회원가입을 할 지 물어봅니다.
@@ -83,7 +80,7 @@ module.exports = class RegisterRequest {
             callback(null, msg.toLowerCase());
         });
     }
-    
+
     /**
      * @description
      * askRegisterIntention의 응답 결과를 처리하니다.
