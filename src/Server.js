@@ -1,8 +1,9 @@
+/* global config */
 var serverInstance = null;
 
 module.exports = class Server {
     constructor(app) {
-        if(!serverInstance) {
+        if (!serverInstance) {
             serverInstance = this;
         }
         this.app = app
@@ -17,10 +18,25 @@ module.exports = class Server {
          * @type {Client}
          */
         this.servers = {};
+        this.bot = new(require('node-telegram-bot-api'))(config.botToken, {
+            polling: true
+        });
+        /**
+         * @description
+         * It creates a worker as the number of CPU cores.
+         * CPU 수 만큼 워커를 생성합니다.
+         */
         for (let i = 0; i < this.getOs().cpus().length; i++) {
             let id = this.getCluster().fork().id;
             this.app.listen(process.env.PORT || config.port, () => console.log('Listening on worker #' + id));
         }
+        require('./telegram')(this);
+        this.mongo = require('mongoose').createConnection(config.database, {
+            config: {
+                user: config.dbuser,
+                pass: config.dbpass
+            }
+        });
     }
 
     getServers() {
@@ -57,9 +73,9 @@ module.exports = class Server {
     getWorker(index) {
         let count = 0;
         let workers = {};
-        for (let key in this.getCluster().workers)
+        for (let key in this.getCluster().workers) {
             workers[count++] = this.getCluster().workers[key];
-
+        }
         let target = workers[index];
         if (target == null) {
             for (let key in this.getCluster().workers) {
@@ -69,6 +85,17 @@ module.exports = class Server {
         }
         return target;
     }
+
+    /**
+     * @description
+     * It returns Telegram bot instance
+     * 텔레그램 봇 인스턴스를 반환합니다.
+     * @return {object}
+     */
+    getTelegramBot() {
+        return this.bot;
+    }
+
     /**
      * @description
      * 플레이어가 클라이언트에 접속할 때 호출됩니다.

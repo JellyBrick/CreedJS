@@ -1,21 +1,22 @@
-/* global bot */
-var User = require('../models/Account');
-var error = require('./error');
+/* global minejet */
+
+var User = require('../../models/Account');
+var error = require('../error');
 
 /**
  * @description
  * 회원가입 명령어를 처리합니다.
  */
-//TODO: Registeration 클래스로 기능 분리
+
 module.exports = class RegisterRequest {
     /**
      * @param {Model} user
      * @param {number} id
      */
-    constructor(user, id) {
-        this.user = user;
+    constructor(bot, id) {
+        this.user = {};
         this.id = id;
-
+        this.bot = bot;
     }
 
     /**
@@ -24,10 +25,12 @@ module.exports = class RegisterRequest {
      * @param {function} callback
      */
     askNickName(callback) {
-        if(User.findOne({id: this.id}).exists()) {
+        if (User.findOne({
+                id: this.id
+            }).exists()) {
             callback(new Error(error.ALREADY_REGISTERED));
         }
-        utils.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
+        minejet.telegramManager.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
             callback(null, msg.text);
         });
     }
@@ -39,10 +42,12 @@ module.exports = class RegisterRequest {
      * @param {function} callback
      */
     checkOverlappedNickName(name, callback) {
-        if(! User.findOne({nickname: name}).exists()) {
+        if (!User.findOne({
+                nickname: name
+            }).exists()) {
             return callback(new Error(error.EXISTING_NICKNAME));
         }
-        this.user.set('nickname', name);
+        this.user['nickname'] = name;
         callback();
     }
 
@@ -52,7 +57,7 @@ module.exports = class RegisterRequest {
      * @param {function} callback
      */
     askPassword(callback) {
-        utils.ask(this.id, 'Send password you want to set : ', msg => {
+        minejet.telegramManager.ask(this.id, 'Send password you want to set : ', msg => {
             callback(null, msg.text);
         });
     }
@@ -63,10 +68,10 @@ module.exports = class RegisterRequest {
      * @param {function} callback
      */
     askEmailAddress(callback) {
-        utils.ask(this.id, 'Send your e-mail address', msg => {
+        minejet.telegramManager.ask(this.id, 'Send your e-mail address', msg => {
             let email = msg;
             //validate
-            this.user.set('email', email);
+            this.user['email'] = email;
         });
     }
 
@@ -76,7 +81,7 @@ module.exports = class RegisterRequest {
      * @param {function} callback
      */
     askRegisterIntention(callback) {
-        utils.ask(this.id, 'Do you want to register with this info? (Y/N)', msg => {
+        minejet.telegramManagerManager.ask(this.id, 'Do you want to register with this info? (Y/N)', msg => {
             callback(null, msg.toLowerCase());
         });
     }
@@ -88,13 +93,22 @@ module.exports = class RegisterRequest {
      * @param {string} res
      */
     checkFinalIntention(err, res) {
-        if(err) {
+        if (err) {
             throw err;
         }
-        if(this.isYes(res)) {
-            this.user.save();
+        if (this.isYes(res)) {
+            return null;
         } else {
             bot.sendMessage(this.id, 'Register failed');
         }
+    }
+
+    /**
+     * @description
+     * 유저 데이터를 반환합니다.
+     * @return {object}
+     */
+    getData() {
+        return this.user;
     }
 };

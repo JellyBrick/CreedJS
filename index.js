@@ -6,22 +6,11 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const redis = require('redis');
 
 const path = require('path');
 
 global.minejet = {};
 global.config = require('./config');
-minejet.bot = new (require('node-telegram-bot-api'))(config.botToken, {
-    polling: true
-});
-minejet.mongo = mongoose.createConnection(config.database, {
-    config: {
-        user: config.dbuser,
-        pass: config.dbpass
-    }
-});
-minejet.redisClient = redis.createClient();
 
 minejet.database = {};
 
@@ -31,6 +20,7 @@ var index = require('./routes');
 var api = require('./routes/api');
 
 var Account = require('./src/models/Account');
+var TelegramManager = require('./src/telegram/TelegramManager');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -51,9 +41,8 @@ passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
-require('./src/telegram')();
-
 //mongo.on('error', console.error.bind(console, 'connection error:'));
 //mongo.once('open', () => console.log('mongodb connected'));
 
-minejet.server = new (require('./src/Server'))(app);
+minejet.server = new(require('./src/Server'))(app);
+minejet.telegramManager = new TelegramManager();
