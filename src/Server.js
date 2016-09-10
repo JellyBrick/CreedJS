@@ -21,15 +21,6 @@ module.exports = class Server {
         this.bot = new(require('node-telegram-bot-api'))(config.botToken, {
             polling: true
         });
-        /**
-         * @description
-         * It creates a worker as the number of CPU cores.
-         * CPU 수 만큼 워커를 생성합니다.
-         */
-        for (let i = 0; i < this.getOs().cpus().length; i++) {
-            let id = this.getCluster().fork().id;
-            this.app.listen(process.env.PORT || config.port, () => console.log('Listening on worker #' + id));
-        }
         require('./telegram')(this);
         this.mongo = require('mongoose').createConnection(config.database, {
             config: {
@@ -41,49 +32,6 @@ module.exports = class Server {
 
     getServers() {
         return this.server;
-    }
-
-    /**
-     * @description
-     * It returns the Cluster module.
-     * 클러스터 모듈을 반환합니다.
-     * @return {object}
-     */
-    getCluster() {
-        return require('cluster');
-    }
-
-    /**
-     * @description
-     * It returns the OS module.
-     * OS 모듈을 반환합니다.
-     * @return {object}
-     */
-    getOs() {
-        return require('os');
-    }
-
-    /**
-     * @description
-     * It returns the worker to using index. (1 ~ CPU Cores)
-     * 1~CPU코어수 중의 숫자를 입력받아 해당되는 순서의 워커를 반환합니다.
-     * @param {integer} index
-     * @return {object}
-     */
-    getWorker(index) {
-        let count = 0;
-        let workers = {};
-        for (let key in this.getCluster().workers) {
-            workers[count++] = this.getCluster().workers[key];
-        }
-        let target = workers[index];
-        if (target == null) {
-            for (let key in this.getCluster().workers) {
-                target = this.getCluster().workers[key];
-                break;
-            }
-        }
-        return target;
     }
 
     /**
