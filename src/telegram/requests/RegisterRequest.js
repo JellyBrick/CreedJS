@@ -14,8 +14,14 @@ module.exports = class RegisterRequest {
      * @param {number} id
      */
     constructor(bot, id) {
+        /**
+         * @description
+         * 유저 정보를 임시로 저장합니다
+         * @property {}
+         *
+         */
         this.user = {};
-        this.id = id;
+        user.id = id;
         this.bot = bot;
     }
 
@@ -26,7 +32,7 @@ module.exports = class RegisterRequest {
      */
     askNickName(callback) {
         if (User.findOne({
-                id: this.id
+                id: this.user.id
             }).exists()) {
             callback(new Error(error.ALREADY_REGISTERED));
         }
@@ -89,7 +95,7 @@ module.exports = class RegisterRequest {
     /**
      * @description
      * askRegisterIntention의 응답 결과를 처리하니다.
-     * @param {Error|null}  err
+     * @param {?Error}  err
      * @param {string} res
      */
     checkFinalIntention(err, res) {

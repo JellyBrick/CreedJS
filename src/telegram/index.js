@@ -1,9 +1,9 @@
+/* global minejet */
 var User = require('../models/Account');
-var async = require('async');
 var RegisterRequest = require('./requests/RegisterRequest');
 
-module.exports = server => {
+module.exports = () => {
     server.getTelegramBot().on('text', msg => {
-
+        minejet.telegramManager.handleTelegramMessages(msg);
     });
 };

@@ -3,6 +3,7 @@
 module.exports = class {
     constructor() {
         this.askIds = [];
+        this.bot = minejet.server.getTelegramBot();
     }
 
     /**
@@ -17,7 +18,7 @@ module.exports = class {
             return;
         }
         this.askIds.push(target);
-        minejet.server.getTelegramBot().on('text', msg => {
+        this.bot.on('text', msg => {
             callback(msg);
             this.askIds.splice(this.askIds.indexOf(target));
         });
@@ -37,12 +38,13 @@ module.exports = class {
     /**
      * @description
      */
-    handleTelegramMessages() {
+    handleTelegramMessages(msg) {
         if (msg.entities && msg.entities[0].type == 'bot_command') {
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
             let id = msg.from.id;
             switch (command) {
+
                 /**
                  * @description
                  * 회원가입 명령어입니다.
@@ -50,12 +52,14 @@ module.exports = class {
                 case '/register':
                     this.handleTelegramRegistrationMessage(msg)
                     break;
+
                     /**
                      * @description
                      * 비밀번호를 변경합니다
                      */
                 case '/changepassword':
                     break;
+
                     /**
                      * @description
                      * 새 서버를 등록합니다.
@@ -80,6 +84,5 @@ module.exports = class {
             req.askEmailAddress,
             req.askRegisterIntention
         ], req.checkFinalIntention);
-        let user = req.getData();
     }
 };

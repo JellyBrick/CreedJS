@@ -9,40 +9,51 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const path = require('path');
 
-global.minejet = {};
-global.config = require('./config');
-
-minejet.database = {};
-
 var app = express();
 
 var index = require('./routes');
 var api = require('./routes/api');
 
-var Account = require('./src/models/Account');
-var TelegramManager = require('./src/telegram/TelegramManager');
+init();
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+mongo.on('error', console.error.bind(console, 'connection error:'));
+mongo.once('open', () => console.log('mongodb connected'));
 
-app.use(express.static(path.join(__dirname, 'static')));
-app.use(morgan('dev'));
+/**
+ * @description
+ * 초기 설정을 하는 함수입니다
+ */
+function init() {
+    global.minejet = {};
+    global.config = require('./config');
+    minejet.mongo = mongoose.createConnection(config.database, {
+        config: {
+            user: config.dbuser,
+            pass: config.dbpass
+        }
+    });
+    minejet.server = new(require('./src/Server'))(app);
+    minejet.telegramManager = new TelegramManager();
+    require('./telegram');
+    initApp();
+}
 
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-app.use(bodyParser.json());
+/**
+ * @description
+ * Express 초기 셋팅 입니다.
+ */
+function initApp() {
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'pug');
 
-app.use('/', index);
-app.use('/api', api);
+    app.use(express.static(path.join(__dirname, 'static')));
+    app.use(morgan('dev'));
 
-passport.use(new LocalStrategy(Account.authenticate()));
+    app.use(bodyParser.urlencoded({
+        extended: false
+    }));
+    app.use(bodyParser.json());
 
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
-
-//mongo.on('error', console.error.bind(console, 'connection error:'));
-//mongo.once('open', () => console.log('mongodb connected'));
-
-minejet.server = new(require('./src/Server'))(app);
-minejet.telegramManager = new TelegramManager();
+    app.use('/', index);
+    app.use('/api', api);
+}

@@ -17,21 +17,16 @@ module.exports = class Server {
          * Every clients(MCPE Server) using minejet is stored in this.
          * @type {Client}
          */
-        this.servers = {};
+        this.clients = {};
+
         this.bot = new(require('node-telegram-bot-api'))(config.botToken, {
             polling: true
         });
         require('./telegram')(this);
-        this.mongo = require('mongoose').createConnection(config.database, {
-            config: {
-                user: config.dbuser,
-                pass: config.dbpass
-            }
-        });
     }
 
-    getServers() {
-        return this.server;
+    getClients() {
+        return this.clients;
     }
 
     /**

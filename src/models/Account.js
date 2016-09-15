@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var passportLocalMongoose = require('passport-local-mongoose');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const Schema = mongoose.Schema;
 
 var account = new Schema({
 	telegram: {
@@ -12,6 +12,20 @@ var account = new Schema({
 	isBanned: Boolean
 });
 
-account.plugin(passportLocalMongoose);
+account.methods = {
+	setPassword: (password, callback) => {
+		bcrypt.genSalt((err, salt) => {
+			if(err) callback(err);
+			//this.salt = salt;
+			bcrypt.hash(password, salt, (err, hash) => {
+				if(err) callback(err);
+				//this.password = hash;
+				callback(null);
+			});
+		});
+	},
+
+};
+
 
 module.exports = mongoose.model('Account', account);
