@@ -9,6 +9,8 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const path = require('path');
 
+var TelegramManager = require('./src/telegram/TelegramManager');
+
 var app = express();
 
 var index = require('./routes');
@@ -16,8 +18,10 @@ var api = require('./routes/api');
 
 init();
 
-mongo.on('error', console.error.bind(console, 'connection error:'));
-mongo.once('open', () => console.log('mongodb connected'));
+minejet.mongo.on('error', console.error.bind(console, 'connection error:'));
+minejet.mongo.once('open', () => console.log('mongodb connected'));
+
+console.log('end of index');
 
 /**
  * @description
@@ -32,10 +36,11 @@ function init() {
             pass: config.dbpass
         }
     });
-    minejet.server = new(require('./src/Server'))(app);
+    minejet.server = new(require('./src/Server'))();
     minejet.telegramManager = new TelegramManager();
-    require('./telegram');
+    require('./src/telegram')(minejet.server.getTelegramBot());
     initApp();
+    console.log('init finish');
 }
 
 /**
@@ -43,6 +48,8 @@ function init() {
  * Express 초기 셋팅 입니다.
  */
 function initApp() {
+    app.set('port', 80);
+
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'pug');
 
@@ -56,4 +63,7 @@ function initApp() {
 
     app.use('/', index);
     app.use('/api', api);
+
+    app.listen(app.get('port'));
+    console.log('initApp finish');
 }

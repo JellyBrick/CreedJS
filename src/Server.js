@@ -2,11 +2,10 @@
 var serverInstance = null;
 
 module.exports = class Server {
-    constructor(app) {
+    constructor() {
         if (!serverInstance) {
             serverInstance = this;
         }
-        this.app = app
         this._init();
     }
 
@@ -22,7 +21,6 @@ module.exports = class Server {
         this.bot = new(require('node-telegram-bot-api'))(config.botToken, {
             polling: true
         });
-        require('./telegram')(this);
     }
 
     getClients() {

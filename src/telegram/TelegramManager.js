@@ -1,45 +1,29 @@
 /*global minejet */
+const async = require('async');
+
+var RegisterQuery = require('./query/RegisterQuery');
 
 module.exports = class {
-    constructor() {
+    constructor(bot) {
         this.askIds = [];
         this.bot = minejet.server.getTelegramBot();
     }
 
     /**
      * @description
-     * target에게 메세지를 보내고 결과를 콜백으로 전달합니다.
-     * @param {number} target
-     * @param {string} message
-     * @param {function} callback
-     */
-    ask(target, message, callback) {
-        if (this.askIds[target]) {
-            return;
-        }
-        this.askIds.push(target);
-        this.bot.on('text', msg => {
-            callback(msg);
-            this.askIds.splice(this.askIds.indexOf(target));
-        });
-    }
-
-    /**
-     * @description
-     * 수락을 했는지 체크합니다.
-     * @param {string} res
-     */
-    isAcceptance(res) {
-        if (res == 'y' || res == 'yes') {
-            return true;
-        }
-    }
-
-    /**
-     * @description
+     * 텔레그램 명령어들을 처리합니다.
+     * 이미 명령어가 실행중일 경우를 예외처리합니다.
+     * @param {string} msg
      */
     handleTelegramMessages(msg) {
         if (msg.entities && msg.entities[0].type == 'bot_command') {
+            console.log(this.askIds);
+            if (this.askIds.indexOf(msg.from.id) !== -1) {
+                this.bot.sendMessage(msg.from.id, 'First, please complete the previous answer');
+                return;
+            }
+            this.askIds.push(msg.from.id);
+            console.log(this.askIds);
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
             let id = msg.from.id;
@@ -50,7 +34,8 @@ module.exports = class {
                  * 회원가입 명령어입니다.
                  */
                 case '/register':
-                    this.handleTelegramRegistrationMessage(msg)
+                    console.log(typeof(id));
+                    this.handleTelegramRegistrationMessage(id);
                     break;
 
                     /**
@@ -74,15 +59,27 @@ module.exports = class {
      * @description
      * 회원가입 명령어를 처리합니다.
      */
-    handleTelegramRegistrationMessage(msg, id) {
-        let req = new RegisterRequest(this.bot, id);
+    handleTelegramRegistrationMessage(id) {
+        let query = new RegisterQuery(this.bot, id);
+
+        //Function.apply 우회용
+        let _ = function(name) {
+            return function(...args) {
+                query[name](...args);
+            };
+        };
 
         async.waterfall([
-            req.askNickName,
-            req.checkOverlappedNickName,
-            req.askPassword,
-            req.askEmailAddress,
-            req.askRegisterIntention
-        ], req.checkFinalIntention);
+            _('askNickName'),
+            _('checkDuplicatedNickName'),
+            _('askPassword'),
+            _('askEmailAddress'),
+            _('askRegisterIntention')
+        ], () => {
+            console.log();
+            this.askIds.splice(this.askIds.indexOf(id));
+            console.log('askIds.pull');
+            return _('checkFinalIntention');
+        });
     }
 };
