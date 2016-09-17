@@ -4,7 +4,6 @@ module.exports = class {
 	constructor(bot, id) {
 		this.bot = bot;
 		this.id = id;
-		console.log(id + ' Query constructor called');
 	}
 
 	/**
@@ -15,11 +14,9 @@ module.exports = class {
      * @param {function} callback
      */
     ask(target, message, callback) {
-		console.log(this.bot);
         this.bot.sendMessage(target, message);
         this.bot.on('text', msg => {
             callback(msg);
-            this.askIds.splice(this.askIds.indexOf(target));
         });
     }
 

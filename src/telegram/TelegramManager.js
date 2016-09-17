@@ -23,7 +23,6 @@ module.exports = class {
                 return;
             }
             this.askIds.push(msg.from.id);
-            console.log(this.askIds);
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
             let id = msg.from.id;
@@ -34,7 +33,6 @@ module.exports = class {
                  * 회원가입 명령어입니다.
                  */
                 case '/register':
-                    console.log(typeof(id));
                     this.handleTelegramRegistrationMessage(id);
                     break;
 
@@ -76,7 +74,6 @@ module.exports = class {
             _('askEmailAddress'),
             _('askRegisterIntention')
         ], () => {
-            console.log();
             this.askIds.splice(this.askIds.indexOf(id));
             console.log('askIds.pull');
             return _('checkFinalIntention');

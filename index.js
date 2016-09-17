@@ -4,8 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 
 const path = require('path');
 
@@ -21,8 +19,6 @@ init();
 minejet.mongo.on('error', console.error.bind(console, 'connection error:'));
 minejet.mongo.once('open', () => console.log('mongodb connected'));
 
-console.log('end of index');
-
 /**
  * @description
  * 초기 설정을 하는 함수입니다
@@ -30,17 +26,17 @@ console.log('end of index');
 function init() {
     global.minejet = {};
     global.config = require('./config');
-    minejet.mongo = mongoose.createConnection(config.database, {
+    mongoose.connect(config.database, {
         config: {
             user: config.dbuser,
             pass: config.dbpass
         }
     });
+    minejet.mongo = mongoose.connection;
     minejet.server = new(require('./src/Server'))();
     minejet.telegramManager = new TelegramManager();
     require('./src/telegram')(minejet.server.getTelegramBot());
     initApp();
-    console.log('init finish');
 }
 
 /**
@@ -65,5 +61,4 @@ function initApp() {
     app.use('/api', api);
 
     app.listen(app.get('port'));
-    console.log('initApp finish');
 }

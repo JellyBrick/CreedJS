@@ -24,8 +24,6 @@ module.exports = class RegisterQuery extends Query {
          * @property {string} email
          */
         this.user = {};
-        console.log('RegisterQuery constructor called');
-        console.log('this.id = ' + this.id);
     }
 
     /**
@@ -34,20 +32,13 @@ module.exports = class RegisterQuery extends Query {
      * @param {function} callback
      */
     askNickName(callback) {
-        console.log('' + typeof(this));
-        console.log('askNickName called');
-        console.log('this.id = ' + this.id);
-        let id = this.id;
-        Account.where({
+        Account.findOne({
             telegram: {userId: this.id}
-        }).findOne((err, doc) => {
-            console.log('?');
+        }, (err, doc) => {
             if (err) {
-                console.error(err);
                 return callback(err);
             }
             if (doc) {
-                console.log('failed');
                 return callback(new Error(error.ALREADY_REGISTERED));
             }
             super.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
@@ -98,13 +89,14 @@ module.exports = class RegisterQuery extends Query {
      * @param {function} callback
      */
     checkDuplicatedNickName(name, callback) {
-        if (!Account.where({
-                nickname: name
-            }).exists()) {
-            return callback(new Error(error.EXISTING_NICKNAME));
-        }
-        this.user['nickname'] = name;
-        callback();
+        Account.findOne({
+            nickname: name
+        }, (err, doc) => {
+            if(err) return callback(err);
+            if(doc) return callback(new Error(error.EXISTING_NICKNAME));
+            this.user['nickname'] = name;
+            callback();
+        });
     }
 
     /**
@@ -136,8 +128,6 @@ module.exports = class RegisterQuery extends Query {
             if (err) {
                 return console.error(err);
             }
-            console.log('save account succesful');
-            console.log('collection ' + collection);
         });
     }
 
