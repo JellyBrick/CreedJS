@@ -47,7 +47,7 @@ module.exports = class {
                      * @description
                      * 새 서버를 등록합니다.
                      */
-                case '/newserver':
+                case '/addserver':
                     break;
             }
         }
