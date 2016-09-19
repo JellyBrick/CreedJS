@@ -9,6 +9,10 @@ module.exports = class {
         this.bot = minejet.server.getTelegramBot();
     }
 
+    getIds() {
+        return this.askIds;
+    }
+
     /**
      * @description
      * 텔레그램 명령어들을 처리합니다.
@@ -16,16 +20,17 @@ module.exports = class {
      * @param {string} msg
      */
     handleTelegramMessages(msg) {
+        console.log(this.askIds);
         if (msg.entities && msg.entities[0].type == 'bot_command') {
-            console.log(this.askIds);
-            if (this.askIds.indexOf(msg.from.id) !== -1) {
-                this.bot.sendMessage(msg.from.id, 'First, please complete the previous answer');
-                return;
+            let id = msg.from.id;
+
+            let idIndex = this.askIds.indexOf(id);
+            if(!this.isAsking(id)) {
+                this.askIds.push(id);
             }
-            this.askIds.push(msg.from.id);
+
             let split = msg.text.toLowerCase().split(' ');
             let command = split[0];
-            let id = msg.from.id;
             switch (command) {
 
                 /**
@@ -61,22 +66,33 @@ module.exports = class {
         let query = new RegisterQuery(this.bot, id);
 
         //Function.apply 우회용
-        let _ = function(name) {
+        var _ = function(name) {
             return function(...args) {
-                query[name](...args);
+                    if(query.isFailed) {
+                        return;
+                    }
+                    query[name](...args);
+                }
             };
-        };
-
         async.waterfall([
             _('askNickName'),
-            _('checkDuplicatedNickName'),
             _('askPassword'),
-            _('askEmailAddress'),
             _('askRegisterIntention')
-        ], () => {
-            this.askIds.splice(this.askIds.indexOf(id));
+        ], function(err, result) {
+            let index = minejet.telegramManager.getIds().indexOf(id);
+            minejet.telegramManager.getIds().splice(index);
             console.log('askIds.pull');
-            return _('checkFinalIntention');
+            return _('checkFinalIntention')(err, result);
         });
+    }
+
+    /**
+     * @description
+     * 해당 유저(id)가 커맨드를 사용하고 있는지를 불린형으로 반환합니다.
+     * @param {number} id
+     * @return {boolean}
+     */
+    isAsking(id) {
+        return minejet.telegramManager.getIds().indexOf(id) !== -1
     }
 };

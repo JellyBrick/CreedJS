@@ -24,6 +24,7 @@ account.methods = {
 		bcrypt.genSalt((err, salt) => {
 			if(err) callback(err);
 			this.salt = salt;
+			console.log(typeof(password));
 			bcrypt.hash(password, salt, (err, hash) => {
 				if(err) callback(err);
 				this.password = hash;
@@ -48,7 +49,15 @@ account.methods = {
 	 */
 	authenticate: function(password, callback) {
 		bcrypt.compare(password, this.password, callback);
-	}
+	},
+
+	/**
+	 * @description
+	 * 유저를 밴 시킵니다.
+	 */
+	 setBanned: function() {
+		 this.isBanned = true;
+	 }
 };
 
 module.exports = mongoose.model('Account', account);

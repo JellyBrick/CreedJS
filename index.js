@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const Promise = require('promise');
 
 const path = require('path');
 
@@ -26,6 +27,7 @@ minejet.mongo.once('open', () => console.log('mongodb connected'));
 function init() {
     global.minejet = {};
     global.config = require('./config');
+    mongoose.Promise = Promise;
     mongoose.connect(config.database, {
         config: {
             user: config.dbuser,

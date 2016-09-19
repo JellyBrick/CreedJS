@@ -1,7 +1,7 @@
 /* global minejet */
 
 var Account = require('../../models/Account');
-var error = require('../error');
+var ErrorMessage = require('../ErrorMessage');
 var Query = require('./Query');
 
 /**
@@ -21,7 +21,6 @@ module.exports = class RegisterQuery extends Query {
          * 유저 정보를 임시로 저장합니다
          * @property {string} nickname
          * @property {string} password
-         * @property {string} email
          */
         this.user = {};
     }
@@ -39,10 +38,10 @@ module.exports = class RegisterQuery extends Query {
                 return callback(err);
             }
             if (doc) {
-                return callback(new Error(error.ALREADY_REGISTERED));
+                return callback(new Error(ErrorMessage.ALREADY_REGISTERED));
             }
             super.ask(this.id, 'Type MC:PE nickname you want to use : ', msg => {
-                callback(null, msg.text);
+                this.checkDuplicatedNickName(msg, callback);
             });
         });
     }
@@ -54,7 +53,8 @@ module.exports = class RegisterQuery extends Query {
      */
     askPassword(callback) {
         super.ask(this.id, 'Send password you want to set : ', msg => {
-            callback(null, msg.text);
+            this.user['password'] = msg;
+            callback(null);
         });
     }
 
@@ -63,11 +63,12 @@ module.exports = class RegisterQuery extends Query {
      * 이메일을 물어봅니다.
      * @param {function} callback
      */
-    askEmailAddress(callback) {
+    askEmailAddress(p, callback) {
         super.ask(this.id, 'Send your e-mail address', msg => {
             let email = msg;
             //validate
             this.user['email'] = email;
+            callback(null);
         });
     }
 
@@ -89,13 +90,14 @@ module.exports = class RegisterQuery extends Query {
      * @param {function} callback
      */
     checkDuplicatedNickName(name, callback) {
+        console.log(typeof(name));
         Account.findOne({
             nickname: name
         }, (err, doc) => {
             if(err) return callback(err);
-            if(doc) return callback(new Error(error.EXISTING_NICKNAME));
+            if(doc) return callback(new Error(ErrorMessage.EXISTING_NICKNAME));
             this.user['nickname'] = name;
-            callback();
+            callback(null);
         });
     }
 
@@ -107,27 +109,29 @@ module.exports = class RegisterQuery extends Query {
      */
     checkFinalIntention(err, res) {
         if (err) {
-            throw err;
+            this.bot.sendMessage(this.id, err.message);
         }
-        if (!this.isYes(res)) {
-            bot.sendMessage(this.id, 'Register failed');
-            return null;
+        if (!super.isAcceptance(res)) { // 에러나면 이 부분도 실행된다.
+            this.bot.sendMessage(this.id, 'Register failed');
+            return;
         }
         let account = new Account({
             telegram: {
                 userId: this.id
             },
             nickname: this.user['nickname'],
-            email: this.user['email'],
             isBanned: false,
             registerDate: new Date()
         });
-        account.setPassword(this.user['password']);
-
-        account.save((err, collection) => {
-            if (err) {
-                return console.error(err);
-            }
+        account.setPassword(this.user['password'], (err) => {
+            if(err) return console.error(err);
+            account.save((err, collection) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                this.bot.sendMessage(this.id, 'Register success');
+            });
         });
     }
 
