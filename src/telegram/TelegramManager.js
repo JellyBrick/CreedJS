@@ -4,6 +4,7 @@ const async = require('async');
 var RegisterQuery = require('./query/RegisterQuery');
 
 module.exports = class {
+    
     constructor(bot) {
         this.askIds = [];
         this.bot = minejet.server.getTelegramBot();
@@ -38,21 +39,29 @@ module.exports = class {
                  * 회원가입 명령어입니다.
                  */
                 case '/register':
-                    this.handleTelegramRegistrationMessage(id);
+                    this.handleTelegramRegistrationCommand(id);
                     break;
 
-                    /**
-                     * @description
-                     * 비밀번호를 변경합니다
-                     */
+                /**
+                 * @description
+                 * 비밀번호를 변경합니다
+                 */
                 case '/changepassword':
                     break;
 
-                    /**
-                     * @description
-                     * 새 서버를 등록합니다.
-                     */
+                /**
+                 * @description
+                 * 새 서버를 등록합니다.
+                 */
                 case '/addserver':
+                    break;
+
+                /**
+                 * @description
+                 * 명령어를 초기화합니다.
+                 */
+                case '/clear':
+                    this.handleClearCommand(id);
                     break;
             }
         }
@@ -61,12 +70,13 @@ module.exports = class {
     /**
      * @description
      * 회원가입 명령어를 처리합니다.
+     * @param {number} id
      */
-    handleTelegramRegistrationMessage(id) {
+    handleTelegramRegistrationCommand(id) {
         let query = new RegisterQuery(this.bot, id);
 
         //Function.apply 우회용
-        var _ = function(name) {
+        let _ = function(name) {
             return function(...args) {
                     if(query.isFailed) {
                         return;
@@ -84,6 +94,15 @@ module.exports = class {
             return _('checkFinalIntention')(err, result);
         });
     }
+    /**
+     * @description
+     * /clear 명령어를 처리합니다.
+     * @param {number} id
+     */
+     handleClearCommand(id) {
+         this.askIds.splice(idIndex);
+         this.bot.sendMessage(id, 'Your command is all cleared');
+     }
 
     /**
      * @description
@@ -94,4 +113,6 @@ module.exports = class {
     isAsking(id) {
         return minejet.telegramManager.getIds().indexOf(id) !== -1
     }
+
+
 };
