@@ -4,7 +4,7 @@ const async = require('async');
 var RegisterQuery = require('./query/RegisterQuery');
 
 module.exports = class {
-    
+
     constructor(bot) {
         this.askIds = [];
         this.bot = minejet.server.getTelegramBot();
@@ -94,6 +94,7 @@ module.exports = class {
             return _('checkFinalIntention')(err, result);
         });
     }
+    
     /**
      * @description
      * /clear 명령어를 처리합니다.
