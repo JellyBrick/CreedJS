@@ -81,7 +81,6 @@ module.exports = class {
         ], function(err, result) {
             let index = minejet.telegramManager.getIds().indexOf(id);
             minejet.telegramManager.getIds().splice(index);
-            console.log('askIds.pull');
             return _('checkFinalIntention')(err, result);
         });
     }
