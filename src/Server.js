@@ -16,9 +16,8 @@ module.exports = class Server {
          * Every clients(MCPE Server) using minejet is stored in this.
          * @type {Client}
          */
-        this.clients = {};
-
-        this.bot = new(require('node-telegram-bot-api'))(config.botToken, {
+        this.clients = [];
+        this.TelegramBot = new(require('node-telegram-bot-api'))(config.botToken, {
             polling: true
         });
     }
@@ -34,41 +33,41 @@ module.exports = class Server {
      * @return {object}
      */
     getTelegramBot() {
-        return this.bot;
+        return this.telegramBot;
     }
 
     /**
      * @description
      * 플레이어가 클라이언트에 접속할 때 호출됩니다.
-     * @param {Server} server
+     * @param {Client} client
      * @param {Player} player
      */
-    onPlayerJoin(server, player) {
-        server.players.push(player);
+    onPlayerJoin(client, player) {
+        client.players.push(player);
     }
 
     /**
      * @description 플레이어가 클라이언트에서 나갈 때 호출됩니다.
-     * @param {Server} server
+     * @param {Client} client
      * @param {Player} player
      */
-    onPlayerQuit(server, player) {
-        server.players.splice(server.players.indexOf(player), 1);
+    onPlayerQuit(client, player) {
+        client.players.splice(server.players.indexOf(player), 1);
     }
 
     /**
      * @description 클라이언트가 켜질 때 호출됩니다.
-     * @param {Server} server
+     * @param {Client} client
      */
-    onClientOpen(server) {
-        this.servers.push(server);
+    onClientOpen(client) {
+        this.clients[client.domain] = client;
     }
 
     /**
      * @description 클라이언트가 꺼질 때 호출됩니다.
-     * @param {Server} server
+     * @param {Client} client
      */
-    onClientClose(server) {
-        this.server.splice(this.server.indexOf(server), 1);
+    onClientClose(client) {
+        this.clients[client.domain] = null;
     }
 };

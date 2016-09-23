@@ -1,3 +1,5 @@
+var ServerModel = require('./models/Server');
+
 module.exports = class {
 
     /**
@@ -5,13 +7,13 @@ module.exports = class {
      * @param {Document} doc
      */
     constructor(ip, doc) {
-        this.ip = ip;
+        this.domain = domain;
         this.doc = doc;
         this.players = [];
     }
 
-	get ip() {
-		return this.ip;
+	get domain() {
+		return this.domain;
 	}
 
 	get doc() {
@@ -21,4 +23,14 @@ module.exports = class {
 	get players() {
 		return this.players;
 	}
+
+    /**
+     * @description
+     * ip로 클라이언트를 가져옵니다.
+     * @param {string} ip
+     * @param {function} callback
+     */
+    static getClientByIp(ip, callback) {
+
+    }
 };

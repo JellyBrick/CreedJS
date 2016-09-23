@@ -1,10 +1,10 @@
 module.exports = class {
 
 	/**
-	 * @param {Server} server
+	 * @param {Client} client
 	 * @param {Document} doc
 	 */
-	constructor(server, doc) {
+	constructor(Client, doc) {
 		this.server = server;
 		this.doc = doc;
 	}
@@ -13,7 +13,7 @@ module.exports = class {
 		return this.doc;
 	}
 
-	get server() {
-		return this.server;
+	get client() {
+		return this.client;
 	}
 };

@@ -5,7 +5,7 @@ var ObjectId = Schema.Types.ObjectId;
 var serverSchema = new Schema({
     admin: ObjectId,
     name: String,
-    ip: String,
+    domain: String,
     visitors: Number
 });
 
