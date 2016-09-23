@@ -4,7 +4,7 @@ module.exports = class {
 	 * @param {Client} client
 	 * @param {Document} doc
 	 */
-	constructor(Client, doc) {
+	constructor(client, doc) {
 		this.server = server;
 		this.doc = doc;
 	}
