@@ -1,13 +1,15 @@
-var ServerModel = require('./models/Server');
+var Server = require('./models/Client');
 
-module.exports = class {
+module.exports = class Client {
 
     /**
-     * @param {string} ip
+     * @param {string} domain
+     * @param {string} jwt
      * @param {Document} doc
      */
-    constructor(ip, doc) {
+    constructor(domain, jwt,  doc) {
         this.domain = domain;
+        this.jwt = jwt;
         this.doc = doc;
         this.players = [];
     }

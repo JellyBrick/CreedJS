@@ -31,14 +31,19 @@ router.post('/join', limiter.join, (req, res) => {
     let nickname = req.body.nickname;
     let password = req.body.password;
     let response = {};
+    if (!nickname || !password) {
+        return handleErr('No data', req);
+    }
 
-    Account.findOne({nickname: nickname}, (err, doc) => {
-        if(err) return handleErr(err, req);
+    Account.findOne({
+        nickname: nickname
+    }, (err, doc) => {
+        if (err) return handleErr(err, req);
         bcrypt.compare(password, doc.password, (err, result) => {
-            if(err) return handleErr(err, req);
-            if(result) {
+            if (err) return handleErr(err, req);
+            if (result) {
                 Client.getClientByIp(req.ip, (err, client) => {
-                    if(err) return handleErr(err, req);
+                    if (err) return handleErr(err, req);
                     response.result = true;
                     let player = new Player(client, doc);
                     minejet.server.onPlayerJoin(client, player);
@@ -52,6 +57,12 @@ router.post('/join', limiter.join, (req, res) => {
     });
 });
 
+/**
+ * @description
+ * handles error
+ * @param {Error} err
+ * @param {Request} req
+ */
 function handleErr(err, req) {
     let response = {};
     response.result = false;
