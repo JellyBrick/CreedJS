@@ -1,37 +1,34 @@
 {
-  "name": "MineJet",
+  "name": "CreedJS",
   "version": "1.0.0",
-  "description": "Service for MC:PE servers",
+  "description": "Manage accountments, based on telegram, for SandBox Games",
   "main": "index.js",
   "scripts": {
-    "start": "npm install && node index"
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MineJet/MineJet.git"
+    "url": "git+https://github.com/CreedJS/CreedJS.git"
   },
   "author": "110EIm",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MineJet/MineJet/issues"
+    "url": "https://github.com/CreedJS/CreedJS/issues"
   },
-  "homepage": "https://github.com/MineJet/MineJet#readme",
+  "homepage": "https://github.com/CreedJS/CreedJS#readme",
   "dependencies": {
     "async": "^2.0.1",
     "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
-    "cookie-parser": "^1.4.3",
+    "chalk": "^1.1.3",
     "express": "^4.14.0",
     "express-rate-limit": "^2.4.0",
     "jsonwebtoken": "^7.1.7",
     "mongoose": "^4.5.9",
     "morgan": "^1.7.0",
-    "node-telegram-bot-api": "^0.23.3",
-    "passport": "^0.3.2",
-    "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^4.0.0",
-    "promise": "^7.1.1",
     "pug": "^2.0.0-beta3",
-    "serve-favicon": "^2.3.0"
+    "serve-favicon": "^2.3.0",
+    "telegram-node-bot": "^4.0.3"
   }
 }

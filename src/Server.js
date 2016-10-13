@@ -17,23 +17,14 @@ module.exports = class Server {
          * @type {Client}
          */
         this.clients = [];
-        this.TelegramBot = new(require('node-telegram-bot-api'))(config.botToken, {
-            polling: true
-        });
+    }
+
+    messageHandler(msg) {
+
     }
 
     getClients() {
         return this.clients;
-    }
-
-    /**
-     * @description
-     * It returns Telegram bot instance
-     * 텔레그램 봇 인스턴스를 반환합니다.
-     * @return {object}
-     */
-    getTelegramBot() {
-        return this.telegramBot;
     }
 
     /**

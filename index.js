@@ -1,43 +1,48 @@
-/* jshint esversion: 6 */
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-const Promise = require('promise');
-
+const os = require('os');
+const cluster = require('cluster');
 const path = require('path');
 
-var TelegramManager = require('./src/telegram/TelegramManager');
-
+const Server = require('./src/server');
 var app = express();
 
-var index = require('./routes');
-var api = require('./routes/api');
+if(cluster.isMaster){
+    os.cpus().forEach(() => cluster.fork());
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`#${worker.id}: died (${signal || code})`);
+        cluster.fork();
+    });
+    global.server = new Server();
+    return;
+}
 
-init();
+initApp();
 
-minejet.mongo.on('error', console.error.bind(console, 'connection error:'));
-minejet.mongo.once('open', () => console.log('mongodb connected'));
+creedjs.mongo.on('error', console.error.bind(console, 'connection error:'));
+creedjs.mongo.once('open', () => console.log('mongodb connected'));
 
 /**
  * @description
  * 초기 설정을 하는 함수입니다
  */
 function init() {
-    global.minejet = {};
-    global.config = require('./config');
+    /* global creedjs */
+    global.creedjs = {};
+
+    creedjs.PLUGIN_PATH = __dirname + '/plugins';
+    creedjs.config = require('./config');
     mongoose.Promise = Promise;
-    mongoose.connect(config.database, {
+    mongoose.connect(creedjs.config.database, {
         config: {
-            user: config.dbuser,
-            pass: config.dbpass
+            user: creedjs.dbuser,
+            pass: creedjs.dbpass
         }
     });
-    minejet.mongo = mongoose.connection;
-    minejet.server = new(require('./src/Server'))();
-    minejet.telegramManager = new TelegramManager();
-    require('./src/telegram')(minejet.server.getTelegramBot());
+    creedjs.mongo = mongoose.connection;
+    require('./src/telegram')(creedjs.server.getTelegramBot());
     initApp();
 }
 
@@ -58,9 +63,6 @@ function initApp() {
         extended: false
     }));
     app.use(bodyParser.json());
-
-    app.use('/', index);
-    app.use('/api', api);
 
     app.listen(app.get('port'));
 }
