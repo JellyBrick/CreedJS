@@ -1,6 +1,6 @@
 # CreedJS
 
-A useful server and user management web application/telegram bot for the SandBox Games.
+A useful server and user management web application/telegram bot for SandBox Games.
 
 ## License
 

@@ -1,7 +1,7 @@
 {
   "name": "CreedJS",
   "version": "1.0.0",
-  "description": "Manage accountments, based on telegram, for SandBox Games",
+  "description": "Manages accounts, based on telegram, for SandBox Games",
   "main": "index.js",
   "scripts": {
     "start": "node index",
@@ -24,9 +24,9 @@
     "chalk": "^1.1.3",
     "express": "^4.14.0",
     "express-rate-limit": "^2.4.0",
+    "iconv-lite": "^0.4.13",
     "jsonwebtoken": "^7.1.7",
     "mongoose": "^4.5.9",
-    "morgan": "^1.7.0",
     "pug": "^2.0.0-beta3",
     "serve-favicon": "^2.3.0",
     "telegram-node-bot": "^4.0.3"

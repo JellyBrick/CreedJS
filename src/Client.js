@@ -1,4 +1,4 @@
-var Server = require('./models/Client');
+const Client = require('./models/client');
 
 module.exports = class Client {
 
@@ -14,25 +14,21 @@ module.exports = class Client {
         this.players = [];
     }
 
-	get domain() {
-		return this.domain;
-	}
+    get domain() {
+        return this.domain;
+    }
 
-	get doc() {
-		return this.doc;
-	}
-
-	get players() {
-		return this.players;
-	}
+    get players() {
+        return this.players;
+    }
 
     /**
      * @description
      * ip로 클라이언트를 가져옵니다.
      * @param {string} ip
-     * @param {function} callback
+     * @return Promise
      */
-    static getClientByIp(ip, callback) {
+    static getByIp(ip) {
 
     }
 };

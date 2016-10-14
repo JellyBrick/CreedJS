@@ -41,3 +41,6 @@ jspm_packages
 
 config.js
 test.js
+
+/log/
+/telegram-bots/

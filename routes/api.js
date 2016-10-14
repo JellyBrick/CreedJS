@@ -1,17 +1,17 @@
 /* global minejet */
 const express = require('express');
 const bcrypt = require('bcryptjs');
-var router = express.Router();
+const router = express.Router();
 
-var Player = require('../src/Player');
-var Server = require('../src/Client');
-var limiter = require('../src/api/limiter');
+const Player = require('../src/player');
+const Client = require('../src/client');
+const limiter = require('../src/api/limiter');
 
-var Account = require('../src/models/Account');
+const Account = require('../src/models/Account');
 
 router.get('/', (req, res) => {
     res.render('api-description', {
-        title: 'MineJet'
+        title: 'CreedJS'
     });
 });
 
@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
  * @description
  * This is only for authenticating an account.
  */
-router.get('/auth/:nickname:password', (res, req) => {
+router.get('/auth/:nickname', (res, req) => {
 
 });
 
@@ -67,7 +67,7 @@ function handleErr(err, req) {
     let response = {};
     response.result = false;
     response.error = err;
-    res.json(response);
+    req.json(response);
 }
 
 module.exports = router;

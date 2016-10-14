@@ -1,29 +1,31 @@
-/* global config */
-var serverInstance = null;
+const Logger = require('./utils/logger');
 
-module.exports = class Server {
+class Server {
     constructor() {
-        if (!serverInstance) {
-            serverInstance = this;
-        }
         this._init();
     }
 
     _init() {
         /**
          * @description
-         * 모든 클라이언트(마크 서버) 객체가 여기에 담깁니다.
-         * Every clients(MCPE Server) using minejet is stored in this.
+         * Every clients using minejet are stored in this.
+         * 모든 클라이언트 객체가 여기에 담깁니다.
          * @type {Client}
          */
-        this.clients = [];
+        this.clients = {};
+        this.logger = new Logger();
     }
 
+    /**
+     * @description
+     * 자식 프로세서로부터 온 메세지를 처리합니다.
+     * @param {Object} msg
+     */
     messageHandler(msg) {
-
+        
     }
 
-    getClients() {
+    get clients() {
         return this.clients;
     }
 
@@ -33,7 +35,7 @@ module.exports = class Server {
      * @param {Client} client
      * @param {Player} player
      */
-    onPlayerJoin(client, player) {
+    onPlayerJoin(player, client) {
         client.players.push(player);
     }
 
@@ -43,7 +45,7 @@ module.exports = class Server {
      * @param {Player} player
      */
     onPlayerQuit(client, player) {
-        client.players.splice(server.players.indexOf(player), 1);
+        client.players.splice(client.players.indexOf(player), 1);
     }
 
     /**
@@ -59,6 +61,8 @@ module.exports = class Server {
      * @param {Client} client
      */
     onClientClose(client) {
-        this.clients[client.domain] = null;
+        this.clients[client.domain] = undefined;
     }
-};
+}
+
+module.exports = Server;
