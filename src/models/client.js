@@ -9,4 +9,4 @@ var clientSchema = new Schema({
     visitors: Number
 });
 
-module.exports = mongoose.model('Client', serverSchema);
+module.exports = mongoose.model('Client', clientSchema);

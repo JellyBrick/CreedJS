@@ -1,5 +1,5 @@
 {
-  "name": "CreedJS",
+  "name": "creedjs",
   "version": "1.0.0",
   "description": "Manages accounts, based on telegram, for SandBox Games",
   "main": "index.js",

@@ -31,4 +31,13 @@ module.exports = class Client {
     static getByIp(ip) {
 
     }
+
+    /**
+     * @description
+     * This generates JWT for Client authentication.
+     * 이 메소드는 클라이언트 인증을 위한 JWT를 생성합니다.
+     */
+    static genKey() {
+
+    }
 };
