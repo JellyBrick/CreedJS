@@ -1,13 +1,19 @@
+/*global creedjs */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 
-var account = new Schema({
+let account = new Schema({
     telegramId: Number,
     password: String,
     salt: String,
     registerDate: Date,
-    nickname: String,
+    nickname: {
+        type: String,
+        lowercase: true,
+        maxlength: 12,
+        minlength: 4
+    },
     isBanned: Boolean
 });
 
@@ -21,13 +27,12 @@ account.methods = {
      */
     setPassword: function(password, callback) {
         bcrypt.genSalt((err, salt) => {
-            if (err) callback(err);
+            if (err) return callback(err);
             this.salt = salt;
-            console.log(typeof (password));
             bcrypt.hash(password, salt, (err, hash) => {
-                if (err) callback(err);
+                if (err) return callback(err);
                 this.password = hash;
-                callback(null);
+                callback();
             });
         });
     },
@@ -46,9 +51,12 @@ account.methods = {
 	 * This method authenticate his password.
 	 * 비밀번호 인증 메소드입니다.
 	 * @param {string} password
-	 * @param {pwdCallback} callback
+	 * @param {?pwdCallback} callback
 	 */
     authenticate: function(password, callback) {
+        if(typeof callback !== 'function') {
+            return bcrypt.compareSync(password, this.password);
+        }
         bcrypt.compare(password, this.password, callback);
     },
 
@@ -59,6 +67,11 @@ account.methods = {
 	 */
     setBanned: function() {
         this.isBanned = true;
+        this.save(err => {
+            if(err) {
+                creedjs.server.logger.error(err);
+            }
+        });
     }
 };
 var AccountModel = mongoose.model('Account', account);

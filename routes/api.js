@@ -1,4 +1,4 @@
-/* global minejet */
+/* global creedjs */
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
@@ -20,33 +20,33 @@ router.get('/', (req, res) => {
  * This is only for authenticating an account.
  */
 router.get('/auth/:nickname', (res, req) => {
-
+    let password = req.query.passsword;
 });
 
 /**
  * @description
  * When player joins the server, you must POST /join
+ * 플레이어가 서버에 접속할 땐 만드시 /join에 POST 해야합니다.
  */
 router.post('/join', limiter.join, (req, res) => {
     let nickname = req.body.nickname;
     let password = req.body.password;
     let response = {};
     if (!nickname || !password) {
-        return handleErr('No data', req);
+        return error(new Error('request.bodyerror'), req);
     }
 
     Account.findOne({
         nickname: nickname
-    }, (err, doc) => {
-        if (err) return handleErr(err, req);
-        bcrypt.compare(password, doc.password, (err, result) => {
-            if (err) return handleErr(err, req);
+    }).then(data => {
+        bcrypt.compare(password, data.password, (err, result) => {
+            if (err) return error(err, req);
             if (result) {
                 Client.getClientByIp(req.ip, (err, client) => {
-                    if (err) return handleErr(err, req);
+                    if (err) return error(err, req);
                     response.result = true;
-                    let player = new Player(client, doc);
-                    minejet.server.onPlayerJoin(client, player);
+                    let player = new Player(client, data);
+                    //creedjs.server.onPlayerJoin(client, player);
                     res.json(response);
                 });
             } else {
@@ -54,20 +54,23 @@ router.post('/join', limiter.join, (req, res) => {
                 res.json(response);
             }
         });
+    }).catch(err => {
+        creedjs.server.logger.error(err);
     });
 });
 
 /**
  * @description
- * handles error
+ * Handles error
  * @param {Error} err
  * @param {Request} req
  */
-function handleErr(err, req) {
+function error(err, req) {
     let response = {};
     response.result = false;
-    response.error = err;
+    response.error = String(err);
     req.json(response);
+    creedjs.server.logger.error(err);
 }
 
 module.exports = router;

@@ -35,7 +35,7 @@ CacheEntry.prototype.isExpired = function() {
     return this.expirationTime && Date.now() > this.expirationTime;
 };
 CacheEntry.prototype.toString = function() {
-    return "Key: " + this.key + "; Value: " + this.value + "; Ttl: " + this.ttl;
+    return 'Key: ' + this.key + '; Value: ' + this.value + '; Ttl: ' + this.ttl;
 };
 
 function _findWorkerByPid(workerPid) {
@@ -372,6 +372,6 @@ class Memored {
             keys: _keys
         };
     }
-};
+}
 
 minejet.database.Memored = Memored;

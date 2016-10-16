@@ -1,27 +1,27 @@
 class LogLevel {
     static get EMERGENCY() {
-        return 0x00;
+        return 'emergency';
     }
     static get ALERT() {
-        return 0x01;
+        return 'alert';
     }
     static get CRITICAL() {
-        return 0x02;
+        return 'critical';
     }
     static get ERROR() {
-        return 0x03;
+        return 'error';
     }
     static get WARNING() {
-        return 0x04;
+        return 'warning';
     }
     static get NOTICE() {
-        return 0x05;
+        return 'notice';
     }
     static get INFO() {
-        return 0x06;
+        return 'info';
     }
     static get DEBUG() {
-        return 0x07;
+        return 'debug';
     }
 }
 

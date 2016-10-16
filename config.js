@@ -3,4 +3,5 @@ module.exports = {
     database: 'mongodb://localhost/minejet',
     dbuser: '',
     dbpass: '',
+    debug: true
 };

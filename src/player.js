@@ -7,28 +7,37 @@ class Player {
 	 * @param {Document|Object} data
 	 */
     constructor(data, client) {
-        this.client = client;
+        this._client = client;
         this.name = data.name;
         this.telegramId = data.telegram.userId;
         this.banned = data.isBanned;
     }
 
     get client() {
-        return this.client;
+        return this._client;
+    }
+
+    set client(val) {
+        this._client = val;
     }
 
     /**
      * @description
-     * This method bans player. Then he can't join the client next time.
+     * This method bans player. After that he can't join the client next time.
      * 이 메소드는 플레이어를 밴합니다. 그 뒤로는 해당 플레이어는 클라이언트에 접속하지 못합니다.
      */
     setBanned() {
-        return Account.findOneAndUpdate({
-            nickname: this.name
-        }, {
-            $set: {
-                isBanned: true
-            }
+        return new Promise((resolve, reject) => {
+            Account.findOneAndUpdate({
+                nickname: this.name
+            }, {
+                $set: {
+                    isBanned: true
+                }
+            }).catch(err => {
+                creedjs.server.logger.error(err);
+                reject(new Error('server.dberror'));
+            });
         });
     }
 	
@@ -40,7 +49,7 @@ class Player {
      * @param {Client} client
      */
     static getByNickName(name, client) {
-        return new Promise((reject, resolve) => {
+        return new Promise((resolve, reject) => {
             Account.findOne({nickname: name}).then(data => {
                 resolve(new Player(data, client));
             }).catch(err => {

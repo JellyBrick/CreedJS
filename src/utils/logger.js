@@ -24,7 +24,7 @@ class Logger {
          * 로그 좌측에 기록되는 시간 및 레벨명에 쓰일 기본 색상이 이 변수에 저장됩니다.
          */
         this.leftColor = chalk.styles.yellow;
-        this.messageFormat = '%lcolor[%time] %lvcolor[%level] %rcolor%msg';
+        this.messageFormat = '%lcolor[%time] %lvcolor[%level] %msg';
         this.createLogStream(logPath);
     }
 
@@ -37,7 +37,7 @@ class Logger {
     }
 
     error(msg) {
-        this.__send(Level.ERROR, msg);
+        this.__send(Level.ERROR, String(msg));
     }
 
     warning(msg) {
@@ -63,6 +63,10 @@ class Logger {
         this.__send(Level.DEBUG, msg);
     }
 
+    log(level, msg) {
+        this.__send(level, msg);
+    }
+
     createLogStream(lpath) {
         let now = new Date();
 
@@ -78,7 +82,7 @@ class Logger {
 
         let logFile = require('iconv-lite').encode(String(timeFormat + '.log'), 'utf8');
         if(!lpath) lpath = this.logDefaultPath;
-        
+
         let logPath = path.join(lpath + 'log/');
         try {
             fs.mkdirSync(logPath);
@@ -120,40 +124,21 @@ class Logger {
      * @description
      * Internal function writing/processsing logs.
      * 로그를 기록/처리하는 내부 함수입니다.
+     * @param {string} level
+     * @param {string} msg
      */
     __send(level, msg) {
-        let message;
-
-        switch (level) {
-            case Level.EMERGENCY:
-                message = this._parseMessage('emergency', chalk.styles.red, chalk.styles.reset, msg);
-                break;
-            case Level.ALERT:
-                message = this._parseMessage('alert', chalk.styles.red, chalk.styles.reset, msg);
-                break;
-            case Level.CRITICAL:
-                message = this._parseMessage('critical', chalk.styles.red, chalk.styles.reset, msg);
-                break;
-            case Level.ERROR:
-                message = this._parseMessage('error', chalk.styles.red, chalk.styles.reset, msg);
-                break;
-            case Level.WARNING:
-                message = this._parseMessage('warning', chalk.styles.yellow, chalk.styles.reset, msg);
-                break;
-            case Level.NOTICE:
-                message = this._parseMessage('notice', chalk.styles.blue, chalk.styles.reset, msg);
-                break;
-            case Level.INFO:
-                message = this._parseMessage('info', chalk.styles.green, chalk.styles.reset, msg);
-                break;
-            case Level.DEBUG:
-                message = this._parseMessage('debug', chalk.styles.gray, chalk.styles.reset, msg);
-                break;
-        }
-
-        if(!message){
-            message = this._parseMessage(null, message);
-        }
+        let format = {
+            [Level.EMERGENCY]: 'red',
+            [Level.ALERT]: 'red',
+            [Level.CRITICAL]: 'red',
+            [Level.ERROR]: 'red',
+            [Level.WARNING]: 'yellow',
+            [Level.NOTICE]: 'blue',
+            [Level.INFO]: 'green',
+            [Level.DEBUG]: 'gray'
+        };
+        let message = this._parseMessage(level, chalk.styles[format[level]], msg);
 
         /**
          * @description
@@ -177,7 +162,7 @@ class Logger {
      * 메세지 포맷대로 변환하여 반환합니다.
      * @return {string}
      */
-    _parseMessage(level, lvcolor, msgcolor, msg) {
+    _parseMessage(level, lvcolor, msg) {
         /**
          * @description
          * Time is converted to a string form of
@@ -193,10 +178,9 @@ class Logger {
         if(level !== null) {
             message = this.messageFormat
                 .replace('%lcolor', this.leftColor.open)
-                .replace('%time', timeFormat )
+                .replace('%time', timeFormat)
                 .replace('%lvcolor', lvcolor.open)
                 .replace('%level', level)
-                .replace('%rcolor', msgcolor.open)
                 .replace('%msg', msg);
             return message;
         } else {
@@ -204,7 +188,6 @@ class Logger {
                 .replace('%time', timeFormat )
                 .replace('%reset', '')
                 .replace('%level', '')
-                .replace('%rcolor', '')
                 .replace('%msg', msg);
         }
         return message;
@@ -224,9 +207,5 @@ class Logger {
         return this.replaceAll(message, String.fromCharCode(0x1b) + '[0-9;\\[\\(]+[Bm]', '');
     }
 }
-
-var logger = new Logger(__dirname + '/', true);
-logger.info('hi');
-logger.error('what??');
 
 module.exports = Logger;

@@ -1,4 +1,4 @@
-/* global minejet */
+/* global creedjs */
 
 var datastoreInstance = null;
 
@@ -6,7 +6,7 @@ class Datastore {
     constructor() {
         if (datastoreInstance != null)
             return datastoreInstance;
-        this._db = minejet.database.Memored.getData();
+        this._db = creedjs.database.memored.getData();
         datastoreInstance = this;
     }
 
@@ -86,4 +86,4 @@ class Datastore {
     }
 }
 
-minejet.databse.Datastore = Datastore;
+module.exports = Datastore;
