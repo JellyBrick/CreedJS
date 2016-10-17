@@ -1,12 +1,12 @@
-/* global creedjs */
+const Memored = require('./memored');
 
 var datastoreInstance = null;
 
 class Datastore {
     constructor() {
-        if (datastoreInstance != null)
+        if (datastoreInstance !== null)
             return datastoreInstance;
-        this._db = creedjs.database.memored.getData();
+        this._db = Memored.getData();
         datastoreInstance = this;
     }
 

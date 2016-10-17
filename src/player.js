@@ -28,13 +28,13 @@ class Player {
      */
     setBanned() {
         return new Promise((resolve, reject) => {
-            Account.findOneAndUpdate({
+            Account.findOne({
                 nickname: this.name
-            }, {
-                $set: {
-                    isBanned: true
-                }
-            }).catch(err => {
+            })
+            .then(data => {
+                data.sendBanned();
+            })
+            .catch(err => {
                 creedjs.server.logger.error(err);
                 reject(new Error('server.dberror'));
             });

@@ -28,10 +28,10 @@ class Protocal {
     static get CLIENT_CLOSE() {
         return 0x06;
     }
-    static get PROCESS_STOP() {
+    static get SHUTDOWN() {
         return 0x07;
     }
-    static get PROCESS_STOP_CHECK() {
+    static get SHUTDOWN_CHECK() {
         return 0x08;
     }
 }

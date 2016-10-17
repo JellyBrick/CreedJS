@@ -20,7 +20,6 @@ class Server {
          * 모든 클라이언트 객체가 여기에 담깁니다.
          * @type {Client}
          */
-        this.clients = {};
         this.logger = new Logger(this.path, creedjs.config.debug);
 
         /**
@@ -29,10 +28,21 @@ class Server {
          * 마스터 서버의 처리를 구현합니다.
          */
         if(cluster.isMaster) {
+            require('os').cpus().forEach(() => cluster.fork());
+            cluster.on('exit', (worker, code, signal) => {
+                creedjs.server.logger.notice(`#${worker.id}: died (${signal || code})`);
+                if(code !== 0) {
+                    cluster.fork();
+                }
+            });
+            cluster.on('fork', worker => {
+                creedjs.server.logger.notice(`#${worker.id} forked`);
+            });
             cluster.on('online', worker => {
                 worker.on('message', this.masterIncommingMessageHandler);
             });
             this.logger.info('Server start!');
+            creedjs.event.emit('start');
         }
 
         /**
@@ -59,7 +69,8 @@ class Server {
             app.listen(app.get('port'));
             this.logger.info(`Worker #${process.pid} listens on ${app.get('port')}.`);
         }
-        creedjs.event.emit('open');
+        creedjs.datastore.store('clients', {});
+        creedjs.datastore.store('players', []);
     }
 
     /**
@@ -91,7 +102,10 @@ class Server {
                 this.logger.log(level, message);
                 break;
             }
-            case Protocal.PROCESS_STOP_CHECK: {
+            case Protocal.SHUTDOWN_CHECK: {
+                creedjs.event.emit('shutdown');
+                this.logger.notice('Now server is shutdown.');
+                process.exit(0);
                 break;
             }
             default: {
@@ -107,10 +121,11 @@ class Server {
      */
     processIncomingMessageHandler(msg) {
         switch(msg.type) {
-            case Protocal.PROCESS_STOP: {
+            case Protocal.SHUTDOWN: {
                 process.send({
-                    type: Protocal.PROCESS_STOP_CHECK
+                    type: Protocal.SHUTDOWN_CHECK
                 });
+                process.exit(0);
                 break;
             }
             default: {
@@ -127,8 +142,8 @@ class Server {
      */
     onPlayerJoin(player, client) {
         if(cluster.isMaster) {
-            creedjs.event.emit('playerjoin', player);
             client.playerJoin(player);
+            creedjs.event.emit('player-join', player);
             return;
         }
         process.send({
@@ -145,8 +160,8 @@ class Server {
      */
     onPlayerQuit(client, player) {
         if(cluster.isMaster()) {
-            creedjs.event.emit('playerquit', player);
             client.playerQuit(player);
+            creedjs.event.emit('player-quit', player);
             return;
         }
         process.send({
@@ -162,7 +177,10 @@ class Server {
      */
     onClientOpen(client) {
         if(cluster.isMaster()) {
-            creedjs.event.emit('clientopen', client);
+            creedjs.event.emit('client-start', client);
+            if(!this.clients[client.ip]) {
+                this.clients[client.ip] = [];
+            }
             this.clients[client.ip].push(client);
             return;
         }
@@ -178,7 +196,7 @@ class Server {
      */
     onClientClose(client) {
         if(cluster.isMaster()) {
-            creedjs.event.emit('clientclose', client);
+            creedjs.event.emit('client-shutdown', client);
             delete this.clients[client.ip];
             return;
         }

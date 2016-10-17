@@ -1,5 +1,3 @@
-/* global minejet */
-
 var cluster = require('cluster');
 
 var logger = {
@@ -39,18 +37,21 @@ CacheEntry.prototype.toString = function() {
 };
 
 function _findWorkerByPid(workerPid) {
+    if(cluster.isMaster) {
+        console.log('called');
+        return process;
+    }
     var i = 0,
         workerIds = Object.keys(cluster.workers),
         len = workerIds.length,
         worker;
-
     for (; i < len; i++) {
+        console.log(cluster.workers[workerIds[i]].process.pid);
         if (cluster.workers[workerIds[i]].process.pid == workerPid) {
             worker = cluster.workers[workerIds[i]];
             break;
         }
     }
-
     return worker;
 }
 
@@ -66,6 +67,7 @@ function _getResultParamsValues(paramsObj) {
 }
 
 function _sendMessageToWorker(message) {
+    if(!message.workerPid) return;
     var worker = _findWorkerByPid(message.workerPid);
     worker.send(message);
 }
@@ -282,7 +284,7 @@ function _store(key, value, ttl, callback) {
                 value: value,
                 ttl: ttl
             },
-            callback: callback
+            callback: callback,
         });
     }
 }
@@ -302,7 +304,7 @@ function _remove(key, callback) {
             requestParams: {
                 key: key
             },
-            callback: callback
+            callback: callback,
         });
     }
 }
@@ -316,7 +318,7 @@ function _clean(callback) {
     } else {
         _cleanCache({
             type: 'clean',
-            callback: callback
+            callback: callback,
         });
     }
 }
@@ -329,7 +331,7 @@ function _size(callback) {
         });
     } else {
         setImmediate(callback, {
-            size: Object.keys(cache).length
+            size: Object.keys(cache).length,
         });
     }
 }
@@ -341,7 +343,7 @@ function _reset(callback) {
     } else {
         _sendMessageToMaster({
             type: 'reset',
-            callback: callback
+            callback: callback,
         });
     }
 }
@@ -374,4 +376,4 @@ class Memored {
     }
 }
 
-minejet.database.Memored = Memored;
+module.exports = Memored;

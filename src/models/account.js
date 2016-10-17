@@ -37,7 +37,6 @@ account.methods = {
         });
     },
 
-
     /**
      * @description
      * Passing if password is right.
@@ -53,35 +52,35 @@ account.methods = {
 	 * @param {string} password
 	 * @param {?pwdCallback} callback
 	 */
-    authenticate: function(password, callback) {
-        if(typeof callback !== 'function') {
-            return bcrypt.compareSync(password, this.password);
-        }
-        bcrypt.compare(password, this.password, callback);
-    },
-
-	/**
-	 * @description
-	 * It bans user.
-	 * 유저를 밴 시킵니다.
-	 */
-    setBanned: function() {
-        this.isBanned = true;
-        this.save(err => {
-            if(err) {
-                creedjs.server.logger.error(err);
-            }
+    authenticate: function(password) {
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, this.password, (err, result) => {
+                if(err) reject(err);
+                resolve(result);
+            });
         });
-    }
+    },
 };
 var AccountModel = mongoose.model('Account', account);
 
 class Account extends AccountModel {
-    static findByNickName(name) {
-        return this.findOne({nickname: name});
+    static findByNickName(nickname) {
+        return new Promise((resolve, reject) => {
+            this.findOne({nickname}).then(data => {
+                resolve(data);
+            }).catch(err => {
+                reject(err);
+            });
+        });
     }
-    static findByTelegramId(id) {
-        return this.findOne({telegramId: id});
+    static findByTelegramId(telegramId) {
+        return new Promise((resolve, reject) => {
+            this.findOne({telegramId}).then(data => {
+                resolve(data);
+            }).catch(err => {
+                reject(err);
+            });
+        });
     }
 }
 

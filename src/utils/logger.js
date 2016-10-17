@@ -57,10 +57,9 @@ class Logger {
     }
 
     debug(msg) {
-        if (!this.debug) {
-            return;
+        if (this.debug) {
+            this.__send(Level.DEBUG, msg);
         }
-        this.__send(Level.DEBUG, msg);
     }
 
     log(level, msg) {
@@ -83,7 +82,7 @@ class Logger {
         let logFile = require('iconv-lite').encode(String(timeFormat + '.log'), 'utf8');
         if(!lpath) lpath = this.logDefaultPath;
 
-        let logPath = path.join(lpath + 'log/');
+        let logPath = path.join(lpath + '/log/');
         try {
             fs.mkdirSync(logPath);
         } catch (e) {/* empty */}

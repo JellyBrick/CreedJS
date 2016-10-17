@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 
-const os = require('os');
 const fs = require('fs');
 const cluster = require('cluster');
 const path = require('path');
 
+const Protocal = require('./src/network/process-protocal');
 const Server = require('./src/server');
 const EventEmitter = require('./src/event-emitter');
+const Datastore = require('./src/database/datastore');
 
 /* global creedjs */
 global.creedjs = {};
+
+creedjs.datastore = new Datastore();
 
 creedjs.PLUGIN_PATH = __dirname + '/plugins/';
 creedjs.BOT_PATH = __dirname + '/telegram-bots/';
@@ -19,28 +22,19 @@ creedjs.config = require('./config');
 /**
  * @description
  * Telgram bot tokens are stored.
- * 
+ * 텔레그램 봇 토큰들이 저장됩니다.
  */
 creedjs.botTokens = require('./telegram-bots/token.json');
 
 connectDB();
 creedjs.mongo = mongoose.connection;
-
 creedjs.event = new EventEmitter();
-creedjs.server = new Server();
+
+creedjs.server = new Server(__dirname);
 
 if(cluster.isMaster) {
     loadPlugins();
     loadTelegramBots();
-
-    os.cpus().forEach(() => cluster.fork());
-    cluster.on('exit', (worker, code, signal) => {
-        creedjs.server.logger.notice(`#${worker.id}: died (${signal || code})`);
-        cluster.fork();
-    });
-    cluster.on('fork', worker => {
-        creedjs.server.logger.notice(`#${worker.id} forked`);
-    });
     creedjs.mongo.on('error', err => creedjs.server.logger.error('connection error:' + err));
     creedjs.mongo.once('open', () => creedjs.server.logger.info('mongodb connected'));
     return;
@@ -53,18 +47,35 @@ if(cluster.isMaster) {
  */
 function loadPlugins() {
     creedjs.server.logger.notice('Loading plugins...');
-    let modules = require('require-all')(creedjs.PLUGIN_PATH);
-    Object.keys(modules).forEach(k => {
-        let m = modules[k];
-        creedjs.server.logger.info(`-----------------[${m.name || 'NoName'}]-----------------`);
-        creedjs.server.logger.info(`author: ${m.author || 'unknown'}`);
-        creedjs.server.logger.info(`version: ${m.version || '1.0.0'}`);
-        creedjs.server.logger.info(`description: ${m.description || ''}`);
-        if(typeof m.init === 'function') {
-            m.init();
+    let plugins = {};
+    let dirs = fs.readdirSync(creedjs.PLUGIN_PATH).filter(f => fs.statSync(path.join(creedjs.PLUGIN_PATH, f)).isDirectory());
+    Object.keys(dirs).forEach(k => {
+        try {
+            plugins.k = require(creedjs.PLUGIN_PATH + dirs[k]); // 플러그인 폴더의 index.js만 로드합니다.
+            let m = plugins[k]; // index.js
+            if(!m) {
+                creedjs.server.logger.error(new Error(`Plugin ${dirs[k]} must exports any Object`));
+                process.send({
+                    type: Protocal.SHUTDOWN
+                });
+            } else {
+                creedjs.server.logger.info(`-----------------[${m.name || dirs[k]}]-----------------`);
+                creedjs.server.logger.info(`author: ${m.author || 'unknown'}`);
+                creedjs.server.logger.info(`version: ${m.version || '1.0.0'}`);
+                creedjs.server.logger.info(`description: ${m.description || ''}`);
+                if(typeof m.init === 'function') {
+                    m.init();
+                }
+            }
+            
+        } catch(e) {
+            creedjs.server.logger.error(new Error(`Plugin + ${dirs[k]} + has'nt index.js`));
+            process.send({
+                type: Protocal.SHUTDOWN
+            });
         }
+        
     });
-    //TODO: 플러그인 폴더 내에 단일 파일이 아닌 폴더형 플러그인 불러오기.
     creedjs.server.logger.info('-------------------------------------------------');
     creedjs.server.logger.notice('Every plugin was loaded.');
 }
@@ -75,11 +86,34 @@ function loadPlugins() {
  * creedjs.BOT_PATH내에 있는 모든 텔레그램 봇들을 로드합니다.
  */
 function loadTelegramBots() {
+    let bots = {};
     creedjs.server.logger.notice('Loading telegram bots...');
-    let botFolders = fs.readdirSync(creedjs.BOT_PATH).filter(file => {
-        return fs.statSync(path.join(creedjs.BOT_PATH, file)).isDirectory();
+    let dirs = fs.readdirSync(creedjs.BOT_PATH).filter(f => fs.statSync(path.join(creedjs.BOT_PATH, f)).isDirectory());
+    Object.keys(dirs).forEach(k => {
+        try {
+            bots.k = require(creedjs.BOT_PATH + dirs[k]); // 플러그인 폴더의 index.js만 로드합니다.
+            let m = bots[k]; // index.js
+            if(!m) {
+                creedjs.server.logger.error(new Error(`Telegram Bot ${dirs[k]} must exports any Object`));
+                process.send({
+                    type: Protocal.SHUTDOWN
+                });
+            } else {
+                creedjs.server.logger.info(`-----------------[${m.name || dirs[k]}]-----------------`);
+                creedjs.server.logger.info(`author: ${m.author || 'unknown'}`);
+                creedjs.server.logger.info(`version: ${m.version || '1.0.0'}`);
+                creedjs.server.logger.info(`description: ${m.description || ''}`);
+                if(typeof m.init === 'function') {
+                    m.init();
+                }
+            }
+        } catch(e) {
+            creedjs.server.logger.error(new Error(`Telegram Bot + ${dirs[k]} + has'nt index.js`));
+            process.send({
+                type: Protocal.SHUTDOWN
+            });
+        }
     });
-    //TODO: Implementation
     creedjs.server.logger.info('-------------------------------------------------');
     creedjs.server.logger.notice('Every telegram bot was loaded.');
 }
